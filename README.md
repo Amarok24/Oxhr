@@ -1,15 +1,13 @@
 # jXhr
 A Promise-based asynchronous XMLHttpRequest (XHR) wrapper/library.
 
-### Still under development, come back later....
-
-- Written in TypeScript (TS module)
-- No dependencies
-- Very small filesize (currently only 2kb)
-- Bundled and ready-to-use as `bundle.min.js` for JavaScript projects (no module)
+- Written in TypeScript (TS module) with no dependencies
 - An alternative to vanilla XMLHttpRequest and fetch
 - An alternative to feature-rich libraries like [axios](https://github.com/axios/axios)
-- Built-in common features (data transfer progress, cancellation of transfer, custom headers...)
+- Very small filesize (currently only 2kb minified)
+- Bundled and ready-to-use as `bundle.min.js` for JavaScript projects (no module)
+- Made with simplicity in mind, ready for production with basic common features
+- All 8 XHR events used, 5 of them can be handled by callback parameters
 - A small demo included in `index.html`
 
 ---

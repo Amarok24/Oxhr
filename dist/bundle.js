@@ -111,12 +111,11 @@ function OnStartButtonClick() {
     TryToSendData();
     console.log("end OnStartButtonClick");
 }
-function ObtainXhrReference(link) {
-    pointerToXhr = link;
+function ObtainXhrReference(ref) {
+    pointerToXhr = ref;
 }
 function OnAbortButtonClick() {
     console.log("start OnAbortButtonClick");
-    console.dir(pointerToXhr);
     if (pointerToXhr) pointerToXhr.abort();
     console.log("end OnAbortButtonClick");
 }

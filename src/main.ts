@@ -40,6 +40,7 @@ async function TryToSendData(): Promise<void>
 		reqHeaders: myRequestHeaders,
 		timeoutMs: 2000,
 		loadend: OnLoadEnd,
+		//timeout: OnTimeOut,
 		progress: OnProgress,
 		abort: OnAbort,
 		xhrReference: ObtainXhrReference,
@@ -100,7 +101,6 @@ function OnTimeOut(): void
 	console.log("OnTimeOut called!");
 }
 
-
 function OnStartButtonClick()
 {
 	console.log("start OnStartButtonClick");
@@ -108,9 +108,9 @@ function OnStartButtonClick()
 	console.log("end OnStartButtonClick");
 }
 
-function ObtainXhrReference(link: XMLHttpRequest): void
+function ObtainXhrReference(ref: XMLHttpRequest): void
 {
-	pointerToXhr = link;
+	pointerToXhr = ref;
 }
 
 
