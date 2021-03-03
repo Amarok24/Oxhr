@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+	<head>
+
+		<meta http-equiv="Content-Type" content="application/xml+html" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>jXhr demo</title>
+
+		<style>
+		body {
+			margin: 0;
+			background: #ebebeb;
+		}
+
+		.formattedTable {
+			margin: auto;
+			/* border-collapse: collapse; */
+			border: 2px solid #d9e7ef;
+			box-shadow: 0 0 10px #808080;
+		}
+
+		thead {
+			background-color: #3788af;
+			color: white;
+		}
+
+		thead th {
+			padding: 3px 5px;
+			text-align: left;
+		}
+
+		tbody tr {
+			background-color: #a1d5e1;
+		}
+
+		tbody tr:nth-child(odd) {
+			background-color: #d6ecf1;
+		}
+
+		tbody td {
+			padding: 4px;
+		}
+
+		article {
+			background-color: #f2f2e2;
+			padding: 1em;
+			margin-bottom: 1.5em;
+		}
+
+		footer {
+			padding: 0.5em 1em;
+			background-color: #d6ecf1;
+		}
+
+		a {
+			color: steelblue;
+		}
+
+		.container {
+			max-width: 800px;
+			margin: 0 auto;
+			padding: 20px;
+			border: thin solid #bababa;
+			box-shadow: 3px 3px 5px #bababa;
+			background-color: #fdfdfd;
+			color: #404040;
+			font-family: "Open Sans", sans-serif;
+			font-size: 14px;
+			line-height: 1.4;
+		}
+		</style>
+
+		<script src="dist/bundle.js" defer="defer"></script>
+
+	</head>
+
+	<body>
+
+		<div class="container">
+
+			<h1>jXhr demo</h1>
+			(See also console output.)
+
+			<label for="loadProgress">File progress:</label>
+			<progress id="loadProgress" min="0" max="100" value="0"> 0% </progress>
+
+			<label for="loadBytes">Bytes loaded:</label>
+			<span id="loadBytes"></span>
+
+			<br />
+
+			<input type="button" id="startButton" value="Start" />
+			<input type="button" id="abortButton" value="Abort" />
+
+
+		</div>
+
+	</body>
+</html>
