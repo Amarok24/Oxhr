@@ -21,12 +21,24 @@ A secure runtime for JavaScript and TypeScript.
 Used for bundling the .ts sources to single .js file.
 [Homepage](https://deno.land/)
 
+To reproduce my development environment in VSCode just put this code into your `settings.json` inside of `.vscode` folder:
+
+`
+{
+	"deno.enable": true,
+	"deno.lint": false,
+	"deno.unstable": false,
+	"deno.config": "./tsconfig.json"
+}
+`
+
 ### Terser
 JavaScript parser, mangler and compressor toolkit for ES6+.
 Used for minifying the bundled .js file.
 [Homepage](https://terser.org/)
 
 ---
+
 
 ### License:
 This project is released as permissive free software under the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
