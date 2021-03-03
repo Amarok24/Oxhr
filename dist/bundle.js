@@ -1,5 +1,5 @@
 const defaults = {
-    timeout: 600000
+    timeoutMs: 600000
 };
 function SendXhrData(params) {
     const HttpExecutor = (resolve, reject)=>{
@@ -30,6 +30,13 @@ function SendXhrData(params) {
                 if (params.progress) params.progress(-1, ev.loaded);
             }
         };
+        const HandleTimeout = ()=>{
+            reject(new Error("TimeoutError"));
+        };
+        const HandleReadyStateChange = (ev)=>{
+            console.log("HandleReadyStateChange");
+            console.log(ev);
+        };
         xhr.open(params.method, params.url);
         if (params.reqHeaders) {
             params.reqHeaders.forEach((h)=>{
@@ -39,19 +46,24 @@ function SendXhrData(params) {
                 }
             });
         }
-        xhr.timeout = params.timeout ? params.timeout : defaults.timeout;
+        xhr.timeout = params.timeoutMs ? params.timeoutMs : defaults.timeoutMs;
         xhr.responseType = params.respType;
         xhr.addEventListener("load", HandleLoad);
         xhr.addEventListener("error", HandleError);
         xhr.addEventListener("progress", HandleProgress);
         if (params.loadend) xhr.addEventListener("loadend", params.loadend);
         if (params.abort) xhr.addEventListener("abort", params.abort);
+        if (params.readystatechange) xhr.addEventListener("readystatechange", params.readystatechange);
+        if (params.timeout) {
+            xhr.addEventListener("timeout", params.timeout);
+        } else {
+            xhr.addEventListener("timeout", HandleTimeout);
+        }
         xhr.send(params.data);
         if (params.xhrReference) params.xhrReference(xhr);
     };
     return new Promise(HttpExecutor);
 }
-const SendXhrData1 = SendXhrData;
 const startButton = document.querySelector("#startButton");
 const abortButton = document.querySelector("#abortButton");
 const loadProgress = document.querySelector("#loadProgress");
@@ -66,23 +78,22 @@ async function TryToSendData() {
         data: "my test",
         respType: "json",
         reqHeaders: myRequestHeaders,
-        timeout: 15000,
-        consoleInfo: "Connecting...",
+        timeoutMs: 2000,
         loadend: OnLoadEnd,
         progress: OnProgress,
         abort: OnAbort,
-        xhrReference: ObtainXhrReference
+        xhrReference: ObtainXhrReference,
+        consoleInfo: "Connecting..."
     };
     try {
-        response = await SendXhrData1(xhrOptions);
+        response = await SendXhrData(xhrOptions);
         if (response && response.status === 200) {
             console.log("JSON response with 200, good! JSON below.");
         } else {
             console.log("HTML response OK, but JSON response.status not 200. JSON below.");
         }
-    } catch (error) {
-        console.log("TryToSendForm error: something went wrong...");
-        console.error(error);
+    } catch (err) {
+        console.log(`An error occured, but we handled it. Error message: ${err.message}`);
     }
 }
 function OnProgress(percent, bytes) {

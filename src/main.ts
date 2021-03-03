@@ -38,12 +38,12 @@ async function TryToSendData(): Promise<void>
 		data: "my test",
 		respType: "json",
 		reqHeaders: myRequestHeaders,
-		timeout: 15000,
-		consoleInfo: "Connecting...",
+		timeoutMs: 2000,
 		loadend: OnLoadEnd,
 		progress: OnProgress,
 		abort: OnAbort,
-		xhrReference: ObtainXhrReference
+		xhrReference: ObtainXhrReference,
+		consoleInfo: "Connecting...",
 	};
 	/*
 		myRequestHeaders.push({
@@ -69,13 +69,11 @@ async function TryToSendData(): Promise<void>
 		//console.log(response);
 
 	}
-	catch (error)
+	catch (err)
 	{
 		// 'error' is the new Error message from reject(new Error) lines in jXhr.ts
-		console.log("TryToSendForm error: something went wrong...");
-		console.error(error);
+		console.log(`An error occured, but we handled it. Error message: ${err.message}`);
 	}
-
 }
 
 
@@ -89,12 +87,17 @@ function OnProgress(percent: number, bytes: number): void
 
 function OnAbort(): void
 {
-	console.log("OnAbort called!")
+	console.log("OnAbort called!");
 }
 
 function OnLoadEnd(): void
 {
-	console.log("OnLoadEnd called!")
+	console.log("OnLoadEnd called!");
+}
+
+function OnTimeOut(): void
+{
+	console.log("OnTimeOut called!");
 }
 
 
@@ -114,10 +117,7 @@ function ObtainXhrReference(link: XMLHttpRequest): void
 function OnAbortButtonClick()
 {
 	console.log("start OnAbortButtonClick");
-	console.dir(pointerToXhr);
-
 	if (pointerToXhr) pointerToXhr.abort();
-
 	console.log("end OnAbortButtonClick");
 }
 
