@@ -4,7 +4,7 @@ https://github.com/Amarok24/Oxhr
 */
 
 import { Oxhr } from "./oxhr.ts";
-import type { IXhrParams, IRequestHeader } from "./ixhrparams.ts";
+import type { IXhrParams, IRequestHeader } from "./oxhrtypes.ts";
 
 const startButton = document.querySelector<HTMLButtonElement>("#startButton");
 const abortButton = document.querySelector<HTMLButtonElement>("#abortButton");
