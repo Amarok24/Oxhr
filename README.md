@@ -1,14 +1,14 @@
 # Oxhr
-An object-oriented XMLHttpRequest (XHR) wrapper/library.
+An object-oriented XHR (XMLHttpRequest) wrapper/library.
 
 ### Modern programmers use fetch, others use Oxhr.
 
 <img width="180" alt="Oxhr logo" src="./oxhr-logo.svg" />
 
-### Some info about Oxhr:
+### Why Oxhr?
 - Promise-based (asynchronous)
 - Written in TypeScript with no dependencies
-- An alternative to vanilla XMLHttpRequest and fetch
+- An alternative to XMLHttpRequest and fetch
 - An alternative to feature-rich libraries like [axios](https://github.com/axios/axios)
 - Very small filesize (currently only 2kb minified)
 - Bundled and ready-to-use as `bundle.min.js` for your JavaScript projects (no module)
@@ -17,6 +17,17 @@ An object-oriented XMLHttpRequest (XHR) wrapper/library.
 - A small demo included in `index.html`
 
 There is also an old version of the library called jXhr which was not written using OOP, see [here](https://github.com/Amarok24/Oxhr/tree/non-oop-version).
+
+---
+
+## FAQs
+
+### How can I stop a running connection?
+- Very easily, you don't need special constructs like the AbortController in Fetch API. In Oxhr you simply call the Abort method. See the included demo.
+
+### Can I open multiple connections at once?
+- Yes and no. It's not possible using one instance of Oxhr, but you can create multiple (independent) instances. Since Oxhr works with EcmaScript's Promise object you can also make use of Promise.all(), Promise.any() and so on.
+
 
 ---
 
