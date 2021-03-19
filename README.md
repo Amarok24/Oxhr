@@ -14,7 +14,7 @@ An object-oriented XHR (XMLHttpRequest) wrapper/library.
 - An alternative to XMLHttpRequest and fetch
 - An alternative to feature-rich libraries like [axios](https://github.com/axios/axios)
 - Made with simplicity in mind, with most-used features
-- All 8 XHR events used, 4 of them can be passed as callback parameters
+- All XHR events used, 4 of them can be passed as callback parameters
 - A small demo included in `index.html`
 
 There is also an old version of the library called jXhr which was not written using OOP, see [here](https://github.com/Amarok24/Oxhr/tree/non-oop-version).
