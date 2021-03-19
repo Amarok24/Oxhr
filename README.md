@@ -1,6 +1,10 @@
 # Oxhr
 A Promise-based asynchronous XMLHttpRequest (XHR) wrapper/library OOP class.
 
+## Modern programmers use fetch, others use Oxhr.
+
+IMGhere
+
 - Written in TypeScript (TS module) with no dependencies
 - An alternative to vanilla XMLHttpRequest and fetch
 - An alternative to feature-rich libraries like [axios](https://github.com/axios/axios)
