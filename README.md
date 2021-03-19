@@ -1,5 +1,5 @@
-# jXhr
-A Promise-based asynchronous XMLHttpRequest (XHR) wrapper/library.
+# Oxhr
+A Promise-based asynchronous XMLHttpRequest (XHR) wrapper/library OOP class.
 
 - Written in TypeScript (TS module) with no dependencies
 - An alternative to vanilla XMLHttpRequest and fetch
@@ -9,6 +9,8 @@ A Promise-based asynchronous XMLHttpRequest (XHR) wrapper/library.
 - Made with simplicity in mind, ready for production with basic common features
 - All 8 XHR events used, 5 of them can be handled by callback parameters
 - A small demo included in `index.html`
+
+There is also an older version of the library called jXhr which was not written using OOP, see [here](https://github.com/Amarok24/Oxhr/tree/non-oop-version).
 
 ---
 
