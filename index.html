@@ -6,7 +6,7 @@
 
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<title>jXhr demo</title>
+		<title>Oxhr demo</title>
 
 		<style>
 		body {
@@ -14,52 +14,12 @@
 			background: #ebebeb;
 		}
 
-		.formattedTable {
-			margin: auto;
-			/* border-collapse: collapse; */
-			border: 2px solid #d9e7ef;
-			box-shadow: 0 0 10px #808080;
-		}
-
-		thead {
-			background-color: #3788af;
-			color: white;
-		}
-
-		thead th {
-			padding: 3px 5px;
-			text-align: left;
-		}
-
-		tbody tr {
-			background-color: #a1d5e1;
-		}
-
-		tbody tr:nth-child(odd) {
-			background-color: #d6ecf1;
-		}
-
-		tbody td {
-			padding: 4px;
-		}
-
-		article {
-			background-color: #f2f2e2;
-			padding: 1em;
-			margin-bottom: 1.5em;
-		}
-
-		footer {
-			padding: 0.5em 1em;
-			background-color: #d6ecf1;
-		}
-
 		a {
 			color: steelblue;
 		}
 
 		.container {
-			max-width: 800px;
+			max-width: 700px;
 			margin: 0 auto;
 			padding: 20px;
 			border: thin solid #bababa;
@@ -72,7 +32,7 @@
 		}
 		</style>
 
-		<script src="dist/bundle.js" defer="defer"></script>
+		<script src="dist/demo.min.js" defer="defer"></script>
 
 	</head>
 
@@ -80,8 +40,11 @@
 
 		<div class="container">
 
-			<h1>jXhr demo</h1>
+			<h1>Oxhr demo</h1>
 			(See also console output.)
+
+			<br />
+			<br />
 
 			<label for="loadProgress">File progress:</label>
 			<progress id="loadProgress" min="0" max="100" value="0"> 0% </progress>
@@ -90,10 +53,16 @@
 			<span id="loadBytes"></span>
 
 			<br />
+			<br />
 
 			<input type="button" id="startButton" value="Start" />
 			<input type="button" id="abortButton" value="Abort" />
 
+			<br />
+			<br />
+			<br />
+
+			<a href="https://github.com/Amarok24/Oxhr" target="_blank">GitHub repository</a>
 
 		</div>
 
