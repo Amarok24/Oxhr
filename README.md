@@ -30,16 +30,16 @@ import type { IXhrParams, IRequestHeader } from "./oxhrtypes.ts";
 
 async function FetchDataExample()
 {
-	const options: IXhrParams = {
-		url: "https://swapi.dev/api/people/1",
-		consoleInfo: "Establishing my connection...",
-		LoadEnd: () => { console.log("Loading finished!") }
-	};
+  const options: IXhrParams = {
+    url: "https://swapi.dev/api/people/1",
+    consoleInfo: "Establishing my connection...",
+    LoadEnd: () => { console.log("Loading finished!") }
+  };
 
-	// The shortest possible call if you don't care about the return type.
-	const myConnection = new Oxhr(options);
-	const result: any = await myConnection.Send();
-	console.log(result);
+  // The shortest possible call if you don't care about the return type.
+  const myConnection = new Oxhr(options);
+  const result: any = await myConnection.Send();
+  console.log(result);
 }
 ```
 
@@ -62,7 +62,7 @@ interface IXhrParams
 }
 ```
 
-__Parameters__
+### Parameters
 
 | Parameter      |   Description             | Required | Default   | Accepted types                                        |
 | :------------- | :------------------------ | :------: | :-------: | :---------------------------------------------------- |
@@ -74,7 +74,8 @@ __Parameters__
 | timeoutMs      |  Timeout in milliseconds  |          | 60'000    | number                                                |
 | consoleInfo    |  Timeout in milliseconds  |          |           | string                                                |
 
-__Callbacks__
+
+### Callbacks
 
 | Name     |   Description                                | Parameters                       |
 | :------- | :------------------------------------------- | :------------------------------- |
@@ -87,10 +88,10 @@ Please note that progress in % must not always work because it depends on server
 
 ## FAQs
 
-### How can I stop a running connection?
+__How can I stop a running connection?__
 - Very easily, you don't need special constructs like the `AbortController()` in Fetch API. In Oxhr you simply call the `Abort()` method. See the included demo.
 
-### Can I open multiple connections at once?
+__Can I open multiple connections at once?__
 - Yes and no. It's not possible using one instance of Oxhr, but you can create multiple (independent) instances. Since Oxhr works with EcmaScript's Promise object you can also make use of Promise.all(), Promise.any() etc.
 
 
