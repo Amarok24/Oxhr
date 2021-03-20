@@ -3,6 +3,7 @@
 	<head>
 
 		<meta http-equiv="Content-Type" content="application/xml+html" />
+		<link rel="icon" type="image/png" href="assets/oxhr-favicon-32.png" />
 
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -32,7 +33,7 @@
 		}
 		</style>
 
-		<script src="dist/demo.min.js" defer="defer"></script>
+		<script src="dist/demo.js" type="module"></script>
 
 	</head>
 
@@ -40,11 +41,10 @@
 
 		<div class="container">
 
-			<h1>Oxhr demo</h1>
+			<h1>A simple Oxhr demo</h1>
 			(See also console output.)
 
-			<br />
-			<br />
+			<br /><br />
 
 			<label for="loadProgress">File progress:</label>
 			<progress id="loadProgress" min="0" max="100" value="0"> 0% </progress>
@@ -52,15 +52,16 @@
 			<label for="loadBytes">Bytes loaded:</label>
 			<span id="loadBytes"></span>
 
-			<br />
-			<br />
+			<br /><br />
 
-			<input type="button" id="startButton" value="Start" />
-			<input type="button" id="abortButton" value="Abort" />
+			<input type="button" id="startButton" value="Start JSON download" />
+			<input type="button" id="abortButton" value="Abort JSON download" />
 
-			<br />
-			<br />
-			<br />
+			<br /><br /><br />
+
+			<input type="button" id="swButton" value="Fetch StarWars data" />
+
+			<br /><br />
 
 			<a href="https://github.com/Amarok24/Oxhr" target="_blank">GitHub repository</a>
 

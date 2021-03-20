@@ -1,21 +1,21 @@
-# Oxhr
+# Oxhr v1.0.1
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 
-### Modern programmers use fetch, others use Oxhr 🐮
+### Modern programmers use fetch, others prefer Oxhr 🐮
 
 <img width="180" alt="Oxhr logo" src="./oxhr-logo.svg" />
 
 ### Why Oxhr?
 - Promise-based (asynchronous)
-- Written in TypeScript
+- Tiny (2kb minified) and pretty simple
+- Ready to use ES module `oxhr.min.js` for your JavaScript projects
 - No dependencies
-- Tiny filesize (2kb minified)
-- Bundled and ready-to-use (ES module `bundle.min.js`) for your JavaScript projects
+- Written in TypeScript
 - An alternative to XMLHttpRequest and fetch
 - An alternative to feature-rich libraries like [axios](https://github.com/axios/axios)
-- Made with simplicity in mind, with most-used features
-- All XHR events used, 4 of them can be passed as callback parameters
-- A small demo included in `index.html`
+- A small demo included, see `index.html`
+
+If you are not familiar with ES modules have a look [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).
 
 There is also an old version of the library called jXhr which was not written using OOP, see [here](https://github.com/Amarok24/Oxhr/tree/non-oop-version).
 
@@ -25,15 +25,15 @@ There is also an old version of the library called jXhr which was not written us
 __Import modules and create a new instance in TypeScript__
 
 ```ts
-import { Oxhr } from "./oxhr.ts";
-import type { IXhrParams, IRequestHeader } from "./oxhrtypes.ts";
+import { Oxhr } from "./oxhr.js";
+import type { IXhrParams, IRequestHeader } from "./oxhrtypes.js";
 
 async function FetchDataExample()
 {
   const options: IXhrParams = {
     url: "https://swapi.dev/api/people/1",
     consoleInfo: "Establishing my connection...",
-    LoadEnd: () => { console.log("Loading finished!") }
+    OnLoadEnd: () => { console.log("Loading finished!") }
   };
 
   // The shortest possible call if you don't care about the return type.
@@ -55,36 +55,44 @@ interface IXhrParams
   requestHeaders?: IRequestHeader[];
   timeoutMs?: number;
   consoleInfo?: string;
-  LoadEnd?: () => void;
-  Progress?: (percent: number, bytes: number) => void;
-  TimeOut?: () => void;
-  Abort?: () => void;
+  OnLoadEnd?: () => void;
+  OnProgress?: (percent: number, bytes: number) => void;
+  OnTimeOut?: () => void;
+  OnAbort?: () => void;
 }
 ```
 
 ### Parameters
 
-| Parameter      |   Description             | Required | Default   | Accepted types                                        |
-| :------------- | :------------------------ | :------: | :-------: | :---------------------------------------------------- |
-| url            |  URL for http request     |     x    |           | string                                                |
-| method         |  HTTP request method      |          | "get"     | string ("get" or "post")                              |
-| responseType   |  A valid response type    |          | ""        | "", "arraybuffer", "blob", "document", "json", "text" |
-| data           |  Data to send             |          | null      | Blob, BufferSource, FormData, URLSearchParams,  ReadableStream<Uint8Array>, string, Document, null |
-| requestHeaders |  array of IRequestHeader  |          |           | IRequestHeader[]                                      |
-| timeoutMs      |  Timeout in milliseconds  |          | 60'000    | number                                                |
-| consoleInfo    |  Timeout in milliseconds  |          |           | string                                                |
+| Parameter      |   Description            | Required | Default   | Accepted types                                        |
+| :------------- | :----------------------- | :------: | :-------: | :---------------------------------------------------- |
+| url            | URL for http request     |   x      |           | string                                                |
+| method         | HTTP request method      |          | "get"     | string ("get" or "post")                              |
+| responseType   | A valid response type    |          | ""        | "", "arraybuffer", "blob", "document", "json", "text" |
+| data           | Data to send             |          | null      | Blob, BufferSource, FormData, URLSearchParams,  ReadableStream, string, Document, null |
+| requestHeaders | Array of IRequestHeader  |          |           | IRequestHeader[]                                      |
+| timeoutMs      | Timeout in milliseconds  |          | 60'000    | number                                                |
+| consoleInfo    | Description for console output |    |           | string                                                |
 
 
 ### Callbacks
 
-| Name     |   Description                                | Parameters                       |
-| :------- | :------------------------------------------- | :------------------------------- |
-| LoadEnd  |  Called after load success, timeout or error |                                  |
-| Progress |  For loading progress in percent and bytes   | (percent: number, bytes: number) |
-| TimeOut  |  Time out callback (see timeoutMs above)     |                                  |
-| Abort    |  To stop an open connection (see demo)       |                                  |
+| Name       | Description                                   | Parameters                       |
+| :--        | :--                                           | :--                              |
+| OnLoadEnd  | Called after success, timeout, abort or error | --                               |
+| OnProgress | Ongoing loading progress in percent and bytes | (percent: number, bytes: number) |
+| OnTimeOut  | Time-out callback (see timeoutMs parameter)   | --                               |
+| OnAbort    | When an open connection gets aborted          | --                               |
 
-Please note that progress in % must not always work because it depends on server settings.
+Please note that progress in % must not always work because it depends on server settings (not all connections give you the total data/file size).
+
+### Methods
+
+| Name   | Description                     | Parameters   |
+| :--    | :--                             | :--          |
+| Send   | Sends the request to the server | --           |
+| Abort  | Aborts an open connection       | --           |
+
 
 ## FAQs
 
@@ -94,31 +102,6 @@ __How can I stop a running connection?__
 __Can I open multiple connections at once?__
 - Yes and no. It's not possible using one instance of Oxhr, but you can create multiple (independent) instances. Since Oxhr works with EcmaScript's Promise object you can also make use of Promise.all(), Promise.any() etc.
 
-
----
-
-<b>Tools used in this project:</b>
-
-### Deno
-A secure runtime for JavaScript and TypeScript.
-Used for bundling the .ts sources to single .js file.
-[Homepage](https://deno.land/)
-
-To reproduce my development environment in VSCode just put this code into your `settings.json` inside of `.vscode` folder:
-
-`
-{
-	"deno.enable": true,
-	"deno.lint": false,
-	"deno.unstable": false,
-	"deno.config": "./tsconfig.json"
-}
-`
-
-### Terser
-JavaScript parser, mangler and compressor toolkit for ES6+.
-Used for minifying the bundled .js file.
-[Homepage](https://terser.org/)
 
 ---
 

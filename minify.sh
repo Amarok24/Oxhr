@@ -1,5 +1,5 @@
 #!/bin/sh
 # echo $@
-echo "Minifiying bundle with Terser..."
+echo "Minifying oxhr.js with Terser..."
 
-terser dist/bundle.js --compress --mangle --output dist/bundle.min.js
+terser dist/oxhr.js --compress --mangle --output dist/oxhr.min.js

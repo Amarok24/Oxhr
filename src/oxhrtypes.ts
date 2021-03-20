@@ -1,5 +1,5 @@
 /*
-Oxhr v1.0
+Oxhr v1.0.1
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 Copyright 2021 Jan Prazak, https://github.com/Amarok24/Oxhr
 Licensed under the Apache License, Version 2.0
@@ -9,17 +9,17 @@ export type { IXhrParams, IResolve, IReject, IRequestHeader };
 
 /**
  *	Parameters for Oxhr.
- *	@param url "URL" for request.
- *	@param method "get" or "post". Default: get.
+ *	@param url "URL" for request. The only mandatory parameter.
+ *	@param method "get" or "post". Default: "get".
  *	@param data Data to send with request. Supports all valid data types. Default: null.
  *	@param responseType A valid response type. Default: "".
- *	@param requestHeaders Optional array of IRequestHeader.
+ *	@param requestHeaders Custom HTTP headers. Array of IRequestHeader.
  *	@param consoleInfo Description of console.group for console output.
- *	@param timeoutMs Timeout in milliseconds after which connection should be interrupted.
- *	@param LoadEnd Callback function for 'loadend'. Called after load success or timeout. When aborting a connection the 'loadend' callback also runs after 'abort' callback.
- *	@param Progress Callback function to which the loading progress in % shall be passed.
- *	@param TimeOut Callback function for timeout.
- *	@param Abort Callback function for 'abort' (when stopping an open connection).
+ *	@param timeoutMs Timeout in milliseconds after which connection will be interrupted.
+ *	@param OnLoadEnd Called after load success, timeout, abort or error.
+ *	@param OnProgress Callback function to which the loading progress in % shall be passed.
+ *	@param OnTimeOut Callback function for timeout.
+ *	@param OnAbort Callback function when an open connection is aborted.
  */
 interface IXhrParams
 {
@@ -30,10 +30,10 @@ interface IXhrParams
 	requestHeaders?: IRequestHeader[];
 	timeoutMs?: number;
 	consoleInfo?: string;
-	LoadEnd?: () => void;
-	Progress?: (percent: number, bytes: number) => void;
-	TimeOut?: () => void;
-	Abort?: () => void;
+	OnLoadEnd?: () => void;
+	OnProgress?: (percent: number, bytes: number) => void;
+	OnTimeOut?: () => void;
+	OnAbort?: () => void;
 }
 
 

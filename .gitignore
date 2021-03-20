@@ -1,1 +1,3 @@
 dist/bundle.js
+dist/oxhr.js
+dist/oxhrtypes.js
