@@ -11,8 +11,8 @@ An object-oriented XHR (XMLHttpRequest) wrapper/library.
 - Ready to use ES module `oxhr.min.js` for your JavaScript projects
 - No dependencies
 - Written in TypeScript
-- An alternative to XMLHttpRequest and fetch
-- An alternative to feature-rich libraries like [axios](https://github.com/axios/axios)
+- An alternative to _XMLHttpRequest_ and _fetch_
+- An alternative to feature-rich libraries like [_axios_](https://github.com/axios/axios)
 - A small demo included, see `index.html`
 
 If you are not familiar with ES modules have a look [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).
