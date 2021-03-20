@@ -20,6 +20,70 @@ An object-oriented XHR (XMLHttpRequest) wrapper/library.
 There is also an old version of the library called jXhr which was not written using OOP, see [here](https://github.com/Amarok24/Oxhr/tree/non-oop-version).
 
 ---
+## API
+
+__Import modules and create a new instance in TypeScript__
+
+```ts
+import { Oxhr } from "./oxhr.ts";
+import type { IXhrParams, IRequestHeader } from "./oxhrtypes.ts";
+
+async function FetchDataExample()
+{
+	const options: IXhrParams = {
+		url: "https://swapi.dev/api/people/1",
+		consoleInfo: "Establishing my connection...",
+		LoadEnd: () => { console.log("Loading finished!") }
+	};
+
+	// The shortest possible call if you don't care about the return type.
+	const myConnection = new Oxhr(options);
+	const result: any = await myConnection.Send();
+	console.log(result);
+}
+```
+
+__The parameters interface__
+
+```ts
+interface IXhrParams
+{
+  url: string;
+  method?: "get" | "post";
+  responseType?: XMLHttpRequestResponseType;
+  data?: BodyInit | Document | null;
+  requestHeaders?: IRequestHeader[];
+  timeoutMs?: number;
+  consoleInfo?: string;
+  LoadEnd?: () => void;
+  Progress?: (percent: number, bytes: number) => void;
+  TimeOut?: () => void;
+  Abort?: () => void;
+}
+```
+
+__Parameters__
+
+| Parameter      |   Description             | Required | Default   | Accepted types                                        |
+| :------------- | :------------------------ | :------: | :-------: | :---------------------------------------------------- |
+| url            |  URL for http request     |     x    |           | string                                                |
+| method         |  HTTP request method      |          | "get"     | string ("get" or "post")                              |
+| responseType   |  A valid response type    |          | ""        | "", "arraybuffer", "blob", "document", "json", "text" |
+| data           |  Data to send             |          | null      | Blob, BufferSource, FormData, URLSearchParams,  ReadableStream<Uint8Array>, string, Document, null |
+| requestHeaders |  array of IRequestHeader  |          |           | IRequestHeader[]                                      |
+| timeoutMs      |  Timeout in milliseconds  |          | 60'000    | number                                                |
+| consoleInfo    |  Timeout in milliseconds  |          |           | string                                                |
+
+__Callbacks__
+
+| Name     |   Description                                | Parameters                       |
+| :------- | :------------------------------------------- | :------------------------------- |
+| LoadEnd  |  Called after load success, timeout or error |                                  |
+| Progress |  For loading progress in percent and bytes   | (percent: number, bytes: number) |
+| TimeOut  |  Time out callback (see timeoutMs above)     |                                  |
+| Abort    |  To stop an open connection (see demo)       |                                  |
+
+Please note that progress in % must not always work because it depends on server settings.
 
 ## FAQs
 
