@@ -3,37 +3,39 @@ Demo of Oxhr, an object-oriented XHR (XMLHttpRequest) wrapper/library.
 https://github.com/Amarok24/Oxhr
 */
 
-import { Oxhr } from "./oxhr.ts";
-import type { IXhrParams, IRequestHeader } from "./oxhrtypes.ts";
+import { Oxhr } from "./oxhr.js";
+import type { IXhrParams, IRequestHeader } from "./oxhrtypes.js";
 
 const startButton = document.querySelector<HTMLButtonElement>("#startButton");
 const abortButton = document.querySelector<HTMLButtonElement>("#abortButton");
+const swButton = document.querySelector<HTMLButtonElement>("#swButton");
 const loadProgress = document.querySelector<HTMLProgressElement>("#loadProgress");
 const loadBytes = document.querySelector<HTMLElement>("#loadBytes");
 
 
-
 // -=-=-= A VERY BASIC USAGE EXAMPLE =-=-=-
-// See console for output. You can then call FetchRandomStarWarsData() as many times as you want to fetch another random StarWars data.
+// Call FetchRandomStarWarsData() as many times as you want to fetch another random StarWars data. See also the browser console.
 
 async function FetchRandomStarWarsData()
 {
 	const random: number = Math.floor(Math.random() * 10 + 1);
+	let result: any;
 
 	const mySimpleOptions: IXhrParams = {
 		url: `https://swapi.dev/api/people/${random}`,
 		// I also recommend this free API for testing: https://webhook.site/
 		consoleInfo: "Establishing my simple test connection...",
-		LoadEnd: () =>
+		OnLoadEnd: () =>
 		{
-			alert("See console output for StarWars data!");
+			alert(result);
 		}
 	};
 
 	// The shortest possible call if you don't care about the return type.
 	const mySimpleConnection = new Oxhr(mySimpleOptions);
 
-	const result: any = await mySimpleConnection.Send();
+	// Send request to the server.
+	result = await mySimpleConnection.Send();
 
 	console.log(result);
 }
@@ -66,10 +68,10 @@ const myOptions: IXhrParams = {
 	requestHeaders: myRequestHeaders,
 	timeoutMs: 7000,
 	consoleInfo: "Establishing my test connection...",
-	LoadEnd: OnLoadEnd,
-	TimeOut: OnTimeOut,
-	Progress: OnProgress,
-	Abort: OnAbort
+	OnLoadEnd: OnLoadEnd,
+	OnTimeOut: OnTimeOut,
+	OnProgress: OnProgress,
+	OnAbort: OnAbort
 };
 
 interface IJsonResponse
@@ -136,23 +138,24 @@ function OnTimeOut(): void
 	console.log("OnTimeOut called!");
 }
 
-function OnStartButtonClick()
+function HandleStartButtonClick()
 {
-	console.log("start OnStartButtonClick");
+	console.log("start HandleStartButtonClick");
 	TryToSendData();
-	console.log("end OnStartButtonClick");
+	console.log("end HandleStartButtonClick");
 }
 
-function OnAbortButtonClick()
+function HandleAbortButtonClick()
 {
-	console.log("start OnAbortButtonClick");
+	console.log("start HandleAbortButtonClick");
 	myConnection.Abort();
-	console.log("end OnAbortButtonClick");
+	console.log("end HandleAbortButtonClick");
 }
 
 
-if (startButton) startButton.addEventListener("click", OnStartButtonClick);
-if (abortButton) abortButton.addEventListener("click", OnAbortButtonClick);
+if (startButton) startButton.addEventListener("click", HandleStartButtonClick);
+if (abortButton) abortButton.addEventListener("click", HandleAbortButtonClick);
+if (swButton) swButton.addEventListener("click", FetchRandomStarWarsData);
 
 
 FetchRandomStarWarsData(); // see console output

@@ -1,5 +1,5 @@
 /*
-Oxhr v1.0
+Oxhr v1.0.1
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 Copyright 2021 Jan Prazak, https://github.com/Amarok24/Oxhr
 
@@ -16,7 +16,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import type { IXhrParams, IResolve, IReject } from "./oxhrtypes.ts";
+import type { IXhrParams, IResolve, IReject } from "./oxhrtypes.js";
 
 export { Oxhr };
 
@@ -38,6 +38,7 @@ class Oxhr<T = any>
 		this.responseType = parameters.responseType ? parameters.responseType : "";
 	}
 
+	// TODO: data parameter
 	Send(): Promise<T> | never
 	{
 		if (this.connectionRunning)
@@ -110,13 +111,13 @@ class Oxhr<T = any>
 			if (ev.lengthComputable)
 			{
 				const percentComplete: number = ev.loaded / ev.total * 100;
-				if (this.params.Progress) this.params.Progress(percentComplete, ev.loaded);
+				if (this.params.OnProgress) this.params.OnProgress(percentComplete, ev.loaded);
 
 			}
 			else
 			{
 				// If ev.total is unknown then it is set to 0 automatically.
-				if (this.params.Progress) this.params.Progress(-1, ev.loaded);
+				if (this.params.OnProgress) this.params.OnProgress(-1, ev.loaded);
 			}
 		};
 
@@ -130,11 +131,11 @@ class Oxhr<T = any>
 		};
 
 		// 'readystatechange' event reports every single event, usually not needed.
-		/* 		const HandleReadyStateChange = (ev: Event): void =>
-				{
-					console.log("HandleReadyStateChange");
-					console.log(ev);
-				};
+		/* const HandleReadyStateChange = (ev: Event): void =>
+			{
+				console.log("HandleReadyStateChange");
+				console.log(ev);
+			};
 		 */
 
 		this.xhr.open(this.method, this.params.url);
@@ -164,13 +165,13 @@ class Oxhr<T = any>
 		this.xhr.addEventListener("error", HandleError);
 		this.xhr.addEventListener("progress", HandleProgress);
 
-		if (this.params.LoadEnd) this.xhr.addEventListener("loadend", this.params.LoadEnd);
-		if (this.params.Abort) this.xhr.addEventListener("abort", this.params.Abort);
+		if (this.params.OnLoadEnd) this.xhr.addEventListener("loadend", this.params.OnLoadEnd);
+		if (this.params.OnAbort) this.xhr.addEventListener("abort", this.params.OnAbort);
 		//if (this.params.readystatechange) this.xhr.addEventListener("readystatechange", this.params.readystatechange);
 
-		if (this.params.TimeOut)
+		if (this.params.OnTimeOut)
 		{
-			this.xhr.addEventListener("timeout", this.params.TimeOut);
+			this.xhr.addEventListener("timeout", this.params.OnTimeOut);
 		}
 		else
 		{
@@ -179,10 +180,6 @@ class Oxhr<T = any>
 
 		// The send() method is async by default, notification of a completed transaction is provided using event listeners.
 		this.xhr.send(this.data);
-
-		//if (this.params.xhrReference) this.params.xhrReference(this.xhr);
-
 	};
-
 
 }
