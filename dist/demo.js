@@ -5,18 +5,18 @@ const swButton = document.querySelector("#swButton");
 const loadProgress = document.querySelector("#loadProgress");
 const loadBytes = document.querySelector("#loadBytes");
 async function FetchRandomStarWarsData() {
+    let response;
     const random = Math.floor(Math.random() * 10 + 1);
-    let result;
     const mySimpleOptions = {
         url: `https://swapi.dev/api/people/${random}`,
         consoleInfo: "Establishing my simple test connection...",
         OnLoadEnd: () => {
-            alert(result);
+            alert(response);
         }
     };
     const mySimpleConnection = new Oxhr(mySimpleOptions);
-    result = await mySimpleConnection.Send();
-    console.log(result);
+    response = await mySimpleConnection.Send();
+    console.log(response);
 }
 const myRequestHeaders = [];
 const myOptions = {

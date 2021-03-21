@@ -4,7 +4,7 @@ https://github.com/Amarok24/Oxhr
 */
 
 import { Oxhr } from "./oxhr.js";
-import type { IXhrParams, IRequestHeader } from "./oxhrtypes.js";
+import type { IOxhrParams, IRequestHeader } from "./oxhrtypes.js";
 
 const startButton = document.querySelector<HTMLButtonElement>("#startButton");
 const abortButton = document.querySelector<HTMLButtonElement>("#abortButton");
@@ -18,26 +18,25 @@ const loadBytes = document.querySelector<HTMLElement>("#loadBytes");
 
 async function FetchRandomStarWarsData()
 {
+	let response: any;
 	const random: number = Math.floor(Math.random() * 10 + 1);
-	let result: any;
 
-	const mySimpleOptions: IXhrParams = {
+	const mySimpleOptions: IOxhrParams = {
 		url: `https://swapi.dev/api/people/${random}`,
 		// I also recommend this free API for testing: https://webhook.site/
 		consoleInfo: "Establishing my simple test connection...",
 		OnLoadEnd: () =>
 		{
-			alert(result);
+			alert(response);
 		}
 	};
 
 	// The shortest possible call if you don't care about the return type.
 	const mySimpleConnection = new Oxhr(mySimpleOptions);
 
-	// Send request to the server.
-	result = await mySimpleConnection.Send();
-
-	console.log(result);
+	// Send request to the server and output response data to console.
+	response = await mySimpleConnection.Send();
+	console.log(response);
 }
 
 
@@ -58,7 +57,7 @@ const myRequestHeaders: IRequestHeader[] = [
 	*/
 ];
 
-const myOptions: IXhrParams = {
+const myOptions: IOxhrParams = {
 	// Attention, daily.json is quite large, 29 Mb
 	url: "https://api.covidtracking.com/v1/states/daily.json",
 	// url: "https://webhook.site/4542eb6f-60f6-4643-b6df-af56e24bed1e",
