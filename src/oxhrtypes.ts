@@ -1,11 +1,11 @@
 /*
-Oxhr v1.0.1
+Oxhr v1.0.2
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 Copyright 2021 Jan Prazak, https://github.com/Amarok24/Oxhr
 Licensed under the Apache License, Version 2.0
 */
 
-export type { IXhrParams, IResolve, IReject, IRequestHeader };
+export type { IOxhrParams, IResolve, IReject, IRequestHeader };
 
 /**
  *	Parameters for Oxhr.
@@ -21,7 +21,7 @@ export type { IXhrParams, IResolve, IReject, IRequestHeader };
  *	@param OnTimeOut Callback function for timeout.
  *	@param OnAbort Callback function when an open connection is aborted.
  */
-interface IXhrParams
+interface IOxhrParams
 {
 	url: string;
 	method?: "get" | "post";

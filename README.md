@@ -1,4 +1,4 @@
-# Oxhr v1.0.1
+# Oxhr v1.0.2
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 
 ### Modern programmers use fetch, others prefer Oxhr 🐮
@@ -26,11 +26,12 @@ __Import modules and create a new instance in TypeScript__
 
 ```ts
 import { Oxhr } from "./oxhr.js";
-import type { IXhrParams, IRequestHeader } from "./oxhrtypes.js";
+import type { IOxhrParams, IRequestHeader } from "./oxhrtypes.js";
 
 async function FetchDataExample()
 {
-  const options: IXhrParams = {
+  let response: any;
+  const options: IOxhrParams = {
     url: "https://swapi.dev/api/people/1",
     consoleInfo: "Establishing my connection...",
     OnLoadEnd: () => { console.log("Loading finished!") }
@@ -38,7 +39,9 @@ async function FetchDataExample()
 
   // The shortest possible call if you don't care about the return type.
   const myConnection = new Oxhr(options);
-  const result: any = await myConnection.Send();
+
+  // Send request to the server and output response data to console.
+  response = await myConnection.Send();
   console.log(result);
 }
 ```
@@ -46,7 +49,7 @@ async function FetchDataExample()
 __The parameters interface__
 
 ```ts
-interface IXhrParams
+interface IOxhrParams
 {
   url: string;
   method?: "get" | "post";

@@ -1,5 +1,5 @@
 /*
-Oxhr v1.0.1
+Oxhr v1.0.2
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 Copyright 2021 Jan Prazak, https://github.com/Amarok24/Oxhr
 
@@ -16,26 +16,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import type { IXhrParams, IResolve, IReject } from "./oxhrtypes.js";
+import type { IOxhrParams, IResolve, IReject } from "./oxhrtypes.js";
 
 export { Oxhr };
 
 
 class Oxhr<T = any>
 {
-	private readonly xhr: XMLHttpRequest = new XMLHttpRequest();
-	private params: IXhrParams;
-	private method: "get" | "post";
-	private data: BodyInit | Document | null;
-	private responseType: XMLHttpRequestResponseType;
-	private connectionRunning: boolean = false;
+	protected readonly xhr: XMLHttpRequest = new XMLHttpRequest();
+	protected params: IOxhrParams;
+	protected method: "get" | "post";
+	protected data: BodyInit | Document | null;
+	protected responseType: XMLHttpRequestResponseType;
+	protected connectionRunning: boolean = false;
 
-	constructor(parameters: IXhrParams)
+	constructor(parameters: IOxhrParams)
 	{
 		this.params = parameters;
-		this.method = parameters.method ? parameters.method : "get";
-		this.data = parameters.data ? parameters.data : null;
-		this.responseType = parameters.responseType ? parameters.responseType : "";
+		this.method = parameters.method ?? "get";
+		this.data = parameters.data ?? null;
+		this.responseType = parameters.responseType ?? "";
 	}
 
 	// TODO: data parameter
@@ -155,7 +155,7 @@ class Oxhr<T = any>
 		// Timeout on client side differs from server timeout. Default timeout is 0 (never).
 		// If timeout > 0 specified then fetching data will be interrupted after given time
 		// and the "timeout" event and "loadend" events will be triggered.
-		this.xhr.timeout = this.params.timeoutMs ? this.params.timeoutMs : 60000;
+		this.xhr.timeout = this.params.timeoutMs ?? 60000;
 
 		this.xhr.responseType = this.responseType;
 		// If respType is "json" then XMLHttpRequest will automatically do JSON.parse().
