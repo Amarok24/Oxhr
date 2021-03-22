@@ -4,7 +4,7 @@ https://github.com/Amarok24/Oxhr
 */
 
 import { Oxhr } from "./oxhr.js";
-import type { IOxhrParams, IRequestHeader } from "./oxhrtypes.js";
+import type { IOxhrParams, IRequestHeader } from "./oxhr_types.js";
 
 const startButton = document.querySelector<HTMLButtonElement>("#startButton");
 const abortButton = document.querySelector<HTMLButtonElement>("#abortButton");
@@ -16,7 +16,7 @@ const loadBytes = document.querySelector<HTMLElement>("#loadBytes");
 // -=-=-= A VERY BASIC USAGE EXAMPLE =-=-=-
 // Call FetchRandomStarWarsData() as many times as you want to fetch another random StarWars data. See also the browser console.
 
-async function FetchRandomStarWarsData()
+async function fetchRandomStarWarsData()
 {
 	let response: any;
 	const random: number = Math.floor(Math.random() * 10 + 1);
@@ -25,7 +25,7 @@ async function FetchRandomStarWarsData()
 		url: `https://swapi.dev/api/people/${random}`,
 		// I also recommend this free API for testing: https://webhook.site/
 		consoleInfo: "Establishing my simple test connection...",
-		OnLoadEnd: () =>
+		onLoadEnd: () =>
 		{
 			alert(response);
 		}
@@ -35,7 +35,7 @@ async function FetchRandomStarWarsData()
 	const mySimpleConnection = new Oxhr(mySimpleOptions);
 
 	// Send request to the server and output response data to console.
-	response = await mySimpleConnection.Send();
+	response = await mySimpleConnection.send();
 	console.log(response);
 }
 
@@ -63,14 +63,14 @@ const myOptions: IOxhrParams = {
 	// url: "https://webhook.site/4542eb6f-60f6-4643-b6df-af56e24bed1e",
 	method: "get",
 	responseType: "json",
-	data: `{ "test": 123 }`,
+	// data: `{ "test": 123 }`, -- Data may be passed before calling the 'send' method.
 	requestHeaders: myRequestHeaders,
 	timeoutMs: 7000,
 	consoleInfo: "Establishing my test connection...",
-	OnLoadEnd: OnLoadEnd,
-	OnTimeOut: OnTimeOut,
-	OnProgress: OnProgress,
-	OnAbort: OnAbort
+	onLoadEnd: onLoadEnd,
+	onTimeOut: onTimeOut,
+	onProgress: onProgress,
+	onAbort: onAbort
 };
 
 interface IJsonResponse
@@ -80,16 +80,18 @@ interface IJsonResponse
 
 const myConnection: Oxhr<IJsonResponse> = new Oxhr<IJsonResponse>(myOptions);
 // Or shorter with type inference:
-//const myConnection = new Oxhr<IJsonResponse>(xhrOptions);
+//const myConnection = new Oxhr<IJsonResponse>(myOptions);
 
 
-async function TryToSendData(): Promise<void>
+async function tryToSendData(): Promise<void>
 {
 	let response: IJsonResponse;
+	const myData = `{ "test": 123 }`;
 
 	try
 	{
-		response = await myConnection.Send();
+		// In this example we pass the data to be sent with request with the 'send' method.
+		response = await myConnection.send(myData);
 
 		if (response && response.someFixedResponseData === 123)
 		{
@@ -112,7 +114,7 @@ async function TryToSendData(): Promise<void>
 }
 
 
-function OnProgress(percent: number, bytes: number): void
+function onProgress(percent: number, bytes: number): void
 {
 	// Very often the total filesize is not known, in such a case percent will be -1
 	if (loadProgress) loadProgress.value = percent;
@@ -120,41 +122,41 @@ function OnProgress(percent: number, bytes: number): void
 }
 
 
-function OnAbort(): void
+function onAbort(): void
 {
 	console.log("OnAbort called!");
 }
 
 
-function OnLoadEnd(): void
+function onLoadEnd(): void
 {
 	console.log("OnLoadEnd called!");
 }
 
 
-function OnTimeOut(): void
+function onTimeOut(): void
 {
 	console.log("OnTimeOut called!");
 }
 
-function HandleStartButtonClick()
+function handleStartButtonClick()
 {
-	console.log("start HandleStartButtonClick");
-	TryToSendData();
-	console.log("end HandleStartButtonClick");
+	console.log("start: handleStartButtonClick");
+	tryToSendData();
+	console.log("end: handleStartButtonClick");
 }
 
-function HandleAbortButtonClick()
+function handleAbortButtonClick()
 {
-	console.log("start HandleAbortButtonClick");
-	myConnection.Abort();
-	console.log("end HandleAbortButtonClick");
+	console.log("start: handleAbortButtonClick");
+	myConnection.abort();
+	console.log("end: handleAbortButtonClick");
 }
 
 
-if (startButton) startButton.addEventListener("click", HandleStartButtonClick);
-if (abortButton) abortButton.addEventListener("click", HandleAbortButtonClick);
-if (swButton) swButton.addEventListener("click", FetchRandomStarWarsData);
+if (startButton) startButton.addEventListener("click", handleStartButtonClick);
+if (abortButton) abortButton.addEventListener("click", handleAbortButtonClick);
+if (swButton) swButton.addEventListener("click", fetchRandomStarWarsData);
 
 
-FetchRandomStarWarsData(); // see console output
+fetchRandomStarWarsData(); // see console output

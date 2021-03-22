@@ -4,18 +4,18 @@ const abortButton = document.querySelector("#abortButton");
 const swButton = document.querySelector("#swButton");
 const loadProgress = document.querySelector("#loadProgress");
 const loadBytes = document.querySelector("#loadBytes");
-async function FetchRandomStarWarsData() {
+async function fetchRandomStarWarsData() {
     let response;
     const random = Math.floor(Math.random() * 10 + 1);
     const mySimpleOptions = {
         url: `https://swapi.dev/api/people/${random}`,
         consoleInfo: "Establishing my simple test connection...",
-        OnLoadEnd: () => {
+        onLoadEnd: () => {
             alert(response);
         }
     };
     const mySimpleConnection = new Oxhr(mySimpleOptions);
-    response = await mySimpleConnection.Send();
+    response = await mySimpleConnection.send();
     console.log(response);
 }
 const myRequestHeaders = [];
@@ -23,20 +23,20 @@ const myOptions = {
     url: "https://api.covidtracking.com/v1/states/daily.json",
     method: "get",
     responseType: "json",
-    data: `{ "test": 123 }`,
     requestHeaders: myRequestHeaders,
     timeoutMs: 7000,
     consoleInfo: "Establishing my test connection...",
-    OnLoadEnd: OnLoadEnd,
-    OnTimeOut: OnTimeOut,
-    OnProgress: OnProgress,
-    OnAbort: OnAbort
+    onLoadEnd: onLoadEnd,
+    onTimeOut: onTimeOut,
+    onProgress: onProgress,
+    onAbort: onAbort
 };
 const myConnection = new Oxhr(myOptions);
-async function TryToSendData() {
+async function tryToSendData() {
     let response;
+    const myData = `{ "test": 123 }`;
     try {
-        response = await myConnection.Send();
+        response = await myConnection.send(myData);
         if (response && response.someFixedResponseData === 123) {
             console.log("We got someFixedResponseData 123");
         }
@@ -48,35 +48,35 @@ async function TryToSendData() {
         console.log(`An error occured, but we handled it. Error message: ${err.message}`);
     }
 }
-function OnProgress(percent, bytes) {
+function onProgress(percent, bytes) {
     if (loadProgress)
         loadProgress.value = percent;
     if (loadBytes)
         loadBytes.innerText = bytes + " bytes";
 }
-function OnAbort() {
+function onAbort() {
     console.log("OnAbort called!");
 }
-function OnLoadEnd() {
+function onLoadEnd() {
     console.log("OnLoadEnd called!");
 }
-function OnTimeOut() {
+function onTimeOut() {
     console.log("OnTimeOut called!");
 }
-function HandleStartButtonClick() {
-    console.log("start HandleStartButtonClick");
-    TryToSendData();
-    console.log("end HandleStartButtonClick");
+function handleStartButtonClick() {
+    console.log("start: handleStartButtonClick");
+    tryToSendData();
+    console.log("end: handleStartButtonClick");
 }
-function HandleAbortButtonClick() {
-    console.log("start HandleAbortButtonClick");
-    myConnection.Abort();
-    console.log("end HandleAbortButtonClick");
+function handleAbortButtonClick() {
+    console.log("start: handleAbortButtonClick");
+    myConnection.abort();
+    console.log("end: handleAbortButtonClick");
 }
 if (startButton)
-    startButton.addEventListener("click", HandleStartButtonClick);
+    startButton.addEventListener("click", handleStartButtonClick);
 if (abortButton)
-    abortButton.addEventListener("click", HandleAbortButtonClick);
+    abortButton.addEventListener("click", handleAbortButtonClick);
 if (swButton)
-    swButton.addEventListener("click", FetchRandomStarWarsData);
-FetchRandomStarWarsData();
+    swButton.addEventListener("click", fetchRandomStarWarsData);
+fetchRandomStarWarsData();

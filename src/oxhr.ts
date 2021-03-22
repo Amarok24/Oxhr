@@ -1,5 +1,5 @@
 /*
-Oxhr v1.0.2
+Oxhr v1.0.3
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 Copyright 2021 Jan Prazak, https://github.com/Amarok24/Oxhr
 
@@ -16,17 +16,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import type { IOxhrParams, IResolve, IReject } from "./oxhrtypes.js";
+import type { IOxhrParams, IResolve, IReject } from "./oxhr_types.js";
 
 export { Oxhr };
 
 
+type CombinedDataType = BodyInit | Document | null;
+
+
 class Oxhr<T = any>
 {
-	protected readonly xhr: XMLHttpRequest = new XMLHttpRequest();
+	private readonly _xhr: XMLHttpRequest = new XMLHttpRequest();
+	private _data: CombinedDataType;
 	protected params: IOxhrParams;
 	protected method: "get" | "post";
-	protected data: BodyInit | Document | null;
 	protected responseType: XMLHttpRequestResponseType;
 	protected connectionRunning: boolean = false;
 
@@ -34,23 +37,25 @@ class Oxhr<T = any>
 	{
 		this.params = parameters;
 		this.method = parameters.method ?? "get";
-		this.data = parameters.data ?? null;
+		this._data = parameters.data ?? null;
 		this.responseType = parameters.responseType ?? "";
 	}
 
-	// TODO: data parameter
-	Send(): Promise<T> | never
+	send(data?: CombinedDataType): Promise<T> | never
 	{
 		if (this.connectionRunning)
 		{
 			throw { message: "A connection is already running." };
 		}
+
+		this._data = data ?? this._data;
+
 		this.connectionRunning = true;
 		// Send has to return type Promise to work correctly with 'await'.
-		return new Promise<T>(this.HttpExecutor);
+		return new Promise<T>(this.httpExecutor);
 	}
 
-	Abort(): void
+	abort(): void
 	{
 		if (!this.connectionRunning)
 		{
@@ -58,87 +63,86 @@ class Oxhr<T = any>
 			return;
 		}
 		console.log("Aborting connection...");
-		this.xhr.abort();
+		this._xhr.abort();
 		this.connectionRunning = false;
 	}
 
-	// Small tutorial: here 'HttpExecutor' is an executor function, used as parameter for new Promise (constructor). It should return void (return value not used anywhere).
+	// Small tutorial: here 'httpExecutor' is an executor function, used as parameter for new Promise (constructor). It should return void (return value not used anywhere).
 	// The executor function must accept two callable functions as parameters which are  internally processed by the Promise object. Inside the executor function we only have to call resolve/reject functions manually depending on success/fail.
 
-	protected HttpExecutor = (resolve: IResolve<T>, reject: IReject): void =>
+	protected httpExecutor = (resolve: IResolve<T>, reject: IReject): void =>
 	{
-		// HttpExecutor must be an arrow function because AFs don't have own binding to 'this'.
-		const HandleLoad = (ev: ProgressEvent<XMLHttpRequestEventTarget>): void =>
+		// httpExecutor must be an arrow function because AFs don't have own binding to 'this'.
+		const handleLoad = (ev: ProgressEvent<XMLHttpRequestEventTarget>): void =>
 		{
-			console.log("HandleLoad");
+			console.log("handleLoad");
 			// https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
-			if (this.xhr.status >= 200 && this.xhr.status < 300)
+			if (this._xhr.status >= 200 && this._xhr.status < 300)
 			{
-				resolve(this.xhr.response);
+				resolve(this._xhr.response);
 				if (this.params.consoleInfo) console.group(this.params.consoleInfo);
 				console.log(`${ev.loaded} bytes loaded.`);
 				if (this.params.consoleInfo) console.groupEnd();
 			}
 			else
 			{
-				// Here xhr.response would usually (always?) be null.
+				// Here _xhr.response would usually (always?) be null.
 				reject(
 					// Reject with full response content to use later.
-					new Error(`HTML status code ${this.xhr.status}`)
+					new Error(`HTML status code ${this._xhr.status}`)
 				);
 			}
 
 			this.connectionRunning = false;
 		};
 
-		const HandleError = (ev: ProgressEvent<XMLHttpRequestEventTarget>): void =>
+		const handleError = (ev: ProgressEvent<XMLHttpRequestEventTarget>): void =>
 		{
 			// Serious errors like timeout / unreachable URL / no internet connection.
 			reject(
 				// Reject with full response content to use later.
-				new Error("jXhr: failed to send request!")
+				new Error("Oxhr: failed to send request!")
 			);
 			if (this.params.consoleInfo) console.group(this.params.consoleInfo);
 			console.log(ev);
-			console.error(`xhr.status ${this.xhr.status}`);
+			console.error(`xhr status: ${this._xhr.status}`);
 			if (this.params.consoleInfo) console.groupEnd();
 
 			this.connectionRunning = false;
 		};
 
-		const HandleProgress = (ev: ProgressEvent<XMLHttpRequestEventTarget>): void =>
+		const handleProgress = (ev: ProgressEvent<XMLHttpRequestEventTarget>): void =>
 		{
 			if (ev.lengthComputable)
 			{
 				const percentComplete: number = ev.loaded / ev.total * 100;
-				if (this.params.OnProgress) this.params.OnProgress(percentComplete, ev.loaded);
+				if (this.params.onProgress) this.params.onProgress(percentComplete, ev.loaded);
 
 			}
 			else
 			{
 				// If ev.total is unknown then it is set to 0 automatically.
-				if (this.params.OnProgress) this.params.OnProgress(-1, ev.loaded);
+				if (this.params.onProgress) this.params.onProgress(-1, ev.loaded);
 			}
 		};
 
-		const HandleTimeout = (): void =>
+		const handleTimeout = (): void =>
 		{
 			// Notice that we don't "throw" an error here, this would be unhandled later.
-			// Here xhr.status is 0.
+			// Here _xhr.status is 0.
 			reject(new Error("TimeoutError"));
 
 			this.connectionRunning = false;
 		};
 
 		// 'readystatechange' event reports every single event, usually not needed.
-		/* const HandleReadyStateChange = (ev: Event): void =>
-			{
-				console.log("HandleReadyStateChange");
-				console.log(ev);
-			};
-		 */
+		// const handleReadyStateChange = (ev: Event): void =>
+		// {
+		//  console.log("handleReadyStateChange");
+		//  console.log(ev);
+		// };
 
-		this.xhr.open(this.method, this.params.url);
+		this._xhr.open(this.method, this.params.url);
 
 		if (this.params.requestHeaders)
 		{
@@ -147,7 +151,7 @@ class Oxhr<T = any>
 				if ((h.header !== "") && (h.value !== ""))
 				{
 					console.log(`Setting custom request header '${h.header}, ${h.value}'`);
-					this.xhr.setRequestHeader(h.header, h.value);
+					this._xhr.setRequestHeader(h.header, h.value);
 				}
 			});
 		}
@@ -155,31 +159,30 @@ class Oxhr<T = any>
 		// Timeout on client side differs from server timeout. Default timeout is 0 (never).
 		// If timeout > 0 specified then fetching data will be interrupted after given time
 		// and the "timeout" event and "loadend" events will be triggered.
-		this.xhr.timeout = this.params.timeoutMs ?? 60000;
+		this._xhr.timeout = this.params.timeoutMs ?? 60000;
 
-		this.xhr.responseType = this.responseType;
+		this._xhr.responseType = this.responseType;
 		// If respType is "json" then XMLHttpRequest will automatically do JSON.parse().
 
 		// All XHR events: https://xhr.spec.whatwg.org/#events
-		this.xhr.addEventListener("load", HandleLoad);
-		this.xhr.addEventListener("error", HandleError);
-		this.xhr.addEventListener("progress", HandleProgress);
+		this._xhr.addEventListener("load", handleLoad);
+		this._xhr.addEventListener("error", handleError);
+		this._xhr.addEventListener("progress", handleProgress);
 
-		if (this.params.OnLoadEnd) this.xhr.addEventListener("loadend", this.params.OnLoadEnd);
-		if (this.params.OnAbort) this.xhr.addEventListener("abort", this.params.OnAbort);
-		//if (this.params.readystatechange) this.xhr.addEventListener("readystatechange", this.params.readystatechange);
+		if (this.params.onLoadEnd) this._xhr.addEventListener("loadend", this.params.onLoadEnd);
+		if (this.params.onAbort) this._xhr.addEventListener("abort", this.params.onAbort);
 
-		if (this.params.OnTimeOut)
+		if (this.params.onTimeOut)
 		{
-			this.xhr.addEventListener("timeout", this.params.OnTimeOut);
+			this._xhr.addEventListener("timeout", this.params.onTimeOut);
 		}
 		else
 		{
-			this.xhr.addEventListener("timeout", HandleTimeout);
+			this._xhr.addEventListener("timeout", handleTimeout);
 		}
 
 		// The send() method is async by default, notification of a completed transaction is provided using event listeners.
-		this.xhr.send(this.data);
+		this._xhr.send(this._data);
 	};
 
 }
