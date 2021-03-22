@@ -1,5 +1,5 @@
 /*
-Oxhr v1.0.2
+Oxhr v1.0.3
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 Copyright 2021 Jan Prazak, https://github.com/Amarok24/Oxhr
 Licensed under the Apache License, Version 2.0
@@ -16,10 +16,10 @@ export type { IOxhrParams, IResolve, IReject, IRequestHeader };
  *	@param requestHeaders Custom HTTP headers. Array of IRequestHeader.
  *	@param consoleInfo Description of console.group for console output.
  *	@param timeoutMs Timeout in milliseconds after which connection will be interrupted.
- *	@param OnLoadEnd Called after load success, timeout, abort or error.
- *	@param OnProgress Callback function to which the loading progress in % shall be passed.
- *	@param OnTimeOut Callback function for timeout.
- *	@param OnAbort Callback function when an open connection is aborted.
+ *	@param onLoadEnd Called after load success, timeout, abort or error.
+ *	@param onProgress Callback function to which the loading progress in % shall be passed.
+ *	@param onTimeOut Callback function for timeout.
+ *	@param onAbort Callback function when an open connection is aborted.
  */
 interface IOxhrParams
 {
@@ -30,10 +30,10 @@ interface IOxhrParams
 	requestHeaders?: IRequestHeader[];
 	timeoutMs?: number;
 	consoleInfo?: string;
-	OnLoadEnd?: () => void;
-	OnProgress?: (percent: number, bytes: number) => void;
-	OnTimeOut?: () => void;
-	OnAbort?: () => void;
+	onLoadEnd?: () => void;
+	onProgress?: (percent: number, bytes: number) => void;
+	onTimeOut?: () => void;
+	onAbort?: () => void;
 }
 
 

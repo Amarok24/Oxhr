@@ -1,4 +1,4 @@
-# Oxhr v1.0.2
+# Oxhr v1.0.3
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 
 ### Modern programmers use fetch, others prefer Oxhr 🐮
@@ -26,22 +26,22 @@ __Import modules and create a new instance in TypeScript__
 
 ```ts
 import { Oxhr } from "./oxhr.js";
-import type { IOxhrParams, IRequestHeader } from "./oxhrtypes.js";
+import type { IOxhrParams, IRequestHeader } from "./oxhr_types.js";
 
-async function FetchDataExample()
+async function fetchDataExample()
 {
   let response: any;
   const options: IOxhrParams = {
     url: "https://swapi.dev/api/people/1",
     consoleInfo: "Establishing my connection...",
-    OnLoadEnd: () => { console.log("Loading finished!") }
+    onLoadEnd: () => { console.log("Loading finished!") }
   };
 
   // The shortest possible call if you don't care about the return type.
   const myConnection = new Oxhr(options);
 
   // Send request to the server and output response data to console.
-  response = await myConnection.Send();
+  response = await myConnection.send();
   console.log(result);
 }
 ```
@@ -58,10 +58,10 @@ interface IOxhrParams
   requestHeaders?: IRequestHeader[];
   timeoutMs?: number;
   consoleInfo?: string;
-  OnLoadEnd?: () => void;
-  OnProgress?: (percent: number, bytes: number) => void;
-  OnTimeOut?: () => void;
-  OnAbort?: () => void;
+  onLoadEnd?: () => void;
+  onProgress?: (percent: number, bytes: number) => void;
+  onTimeOut?: () => void;
+  onAbort?: () => void;
 }
 ```
 
@@ -82,10 +82,10 @@ interface IOxhrParams
 
 | Name       | Description                                   | Parameters                       |
 | :--        | :--                                           | :--                              |
-| OnLoadEnd  | Called after success, timeout, abort or error | --                               |
-| OnProgress | Ongoing loading progress in percent and bytes | (percent: number, bytes: number) |
-| OnTimeOut  | Time-out callback (see timeoutMs parameter)   | --                               |
-| OnAbort    | When an open connection gets aborted          | --                               |
+| onLoadEnd  | Called after success, timeout, abort or error | --                               |
+| onProgress | Ongoing loading progress in percent and bytes | (percent: number, bytes: number) |
+| onTimeOut  | Time-out callback (see timeoutMs parameter)   | --                               |
+| onAbort    | When an open connection gets aborted          | --                               |
 
 Please note that progress in % must not always work because it depends on server settings (not all connections give you the total data/file size).
 
@@ -93,14 +93,14 @@ Please note that progress in % must not always work because it depends on server
 
 | Name   | Description                     | Parameters   |
 | :--    | :--                             | :--          |
-| Send   | Sends the request to the server | --           |
-| Abort  | Aborts an open connection       | --           |
+| send   | Sends the request to the server | data?        |
+| abort  | Aborts an open connection       | --           |
 
 
 ## FAQs
 
 __How can I stop a running connection?__
-- Very easily, you don't need special constructs like the `AbortController()` in Fetch API. In Oxhr you simply call the `Abort()` method. See the included demo.
+- Very easily, you don't need special constructs like the `AbortController()` in Fetch API. In Oxhr you simply call the `abort` method. See the included demo.
 
 __Can I open multiple connections at once?__
 - Yes and no. It's not possible using one instance of Oxhr, but you can create multiple (independent) instances. Since Oxhr works with EcmaScript's Promise object you can also make use of Promise.all(), Promise.any() etc.
