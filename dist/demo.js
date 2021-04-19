@@ -21,7 +21,7 @@ async function fetchRandomStarWarsData() {
 const myRequestHeaders = [];
 const myOptions = {
     url: "https://api.covidtracking.com/v1/states/daily.json",
-    method: "get",
+    method: "GET",
     responseType: "json",
     requestHeaders: myRequestHeaders,
     timeoutMs: 7000,
@@ -36,7 +36,9 @@ async function tryToSendData() {
     let response;
     const myData = `{ "test": 123 }`;
     try {
+        console.log("AWAITING DATA");
         response = await myConnection.send(myData);
+        console.log("ALL DATA RECEIVED");
         if (response && response.someFixedResponseData === 123) {
             console.log("We got someFixedResponseData 123");
         }
@@ -55,16 +57,20 @@ function onProgress(percent, bytes) {
         loadBytes.innerText = bytes + " bytes";
 }
 function onAbort() {
-    console.log("OnAbort called!");
+    console.log("demo: custom abort handler");
 }
 function onLoadEnd() {
-    console.log("OnLoadEnd called!");
+    console.log(`demo: custom loadend handler, readyState = ${myConnection.readyState}`);
 }
 function onTimeOut() {
-    console.log("OnTimeOut called!");
+    console.log("demo: custom timeout handler");
 }
 function handleStartButtonClick() {
-    console.log("start: handleStartButtonClick");
+    console.log(`start: handleStartButtonClick readyState = ${myConnection.readyState}`);
+    if (loadProgress)
+        loadProgress.value = 0;
+    if (loadBytes)
+        loadBytes.innerText = "0 bytes";
     tryToSendData();
     console.log("end: handleStartButtonClick");
 }
