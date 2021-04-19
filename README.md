@@ -70,7 +70,7 @@ interface IOxhrParams
 | Parameter      |   Description            | Required | Default   | Accepted types                                        |
 | :------------- | :----------------------- | :------: | :-------: | :---------------------------------------------------- |
 | url            | URL for http request     |   x      |           | string                                                |
-| method         | HTTP request method      |          | "get"     | string ("GET" | "POST" | "HEAD" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH")                              |
+| method         | HTTP request method      |          | "get"     | string ("GET" \| "POST" \| etc...))                   |
 | responseType   | A valid response type    |          | ""        | "", "arraybuffer", "blob", "document", "json", "text" |
 | data           | Data to send             |          | null      | Blob, BufferSource, FormData, URLSearchParams,  ReadableStream, string, Document, null |
 | requestHeaders | Array of IRequestHeader  |          |           | IRequestHeader[]                                      |
