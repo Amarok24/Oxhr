@@ -1,4 +1,4 @@
-# Oxhr v1.0.3
+# Oxhr v1.1
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 
 ### Modern programmers use fetch, others prefer Oxhr 🐮
@@ -52,7 +52,7 @@ __The parameters interface__
 interface IOxhrParams
 {
   url: string;
-  method?: "get" | "post";
+  method?: "GET" | "POST" | "HEAD" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH";
   responseType?: XMLHttpRequestResponseType;
   data?: BodyInit | Document | null;
   requestHeaders?: IRequestHeader[];
@@ -70,7 +70,7 @@ interface IOxhrParams
 | Parameter      |   Description            | Required | Default   | Accepted types                                        |
 | :------------- | :----------------------- | :------: | :-------: | :---------------------------------------------------- |
 | url            | URL for http request     |   x      |           | string                                                |
-| method         | HTTP request method      |          | "get"     | string ("get" or "post")                              |
+| method         | HTTP request method      |          | "get"     | string ("GET" | "POST" | "HEAD" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH")                              |
 | responseType   | A valid response type    |          | ""        | "", "arraybuffer", "blob", "document", "json", "text" |
 | data           | Data to send             |          | null      | Blob, BufferSource, FormData, URLSearchParams,  ReadableStream, string, Document, null |
 | requestHeaders | Array of IRequestHeader  |          |           | IRequestHeader[]                                      |
@@ -97,13 +97,15 @@ Please note that progress in % must not always work because it depends on server
 | abort  | Aborts an open connection       | --           |
 
 
+There is also a simple getter for reading the "readyState" of current XMLHttpRequest connection.
+
 ## FAQs
 
 __How can I stop a running connection?__
 - Very easily, you don't need special constructs like the `AbortController()` in Fetch API. In Oxhr you simply call the `abort` method. See the included demo.
 
 __Can I open multiple connections at once?__
-- Yes and no. It's not possible using one instance of Oxhr, but you can create multiple (independent) instances. Since Oxhr works with EcmaScript's Promise object you can also make use of Promise.all(), Promise.any() etc.
+- Yes and no. It's not possible using one instance of Oxhr, but you can create multiple (independent) instances. Since Oxhr works with EcmaScript's Promise object you can also make use of Promise.all(), Promise.any() etc. Additionally, you can start multiple "await ... send()" requests using one class instance, they will be handled one after another.
 
 
 ---
