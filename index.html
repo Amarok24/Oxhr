@@ -1,71 +1,133 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
-	<head>
 
-		<meta http-equiv="Content-Type" content="application/xml+html" />
-		<link rel="icon" type="image/png" href="assets/oxhr-favicon-32.png" />
+<head>
 
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Type" content="application/xml+html" />
+  <link rel="icon" type="image/png" href="assets/oxhr-favicon-32.png" />
 
-		<title>Oxhr demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-		<style>
-		body {
-			margin: 0;
-			background: #ebebeb;
-		}
+  <title>Oxhr demo</title>
 
-		a {
-			color: steelblue;
-		}
+  <style>
+    body {
+      margin: 0;
+      background: #ebebeb;
+    }
 
-		.container {
-			max-width: 700px;
-			margin: 0 auto;
-			padding: 20px;
-			border: thin solid #bababa;
-			box-shadow: 3px 3px 5px #bababa;
-			background-color: #fdfdfd;
-			color: #404040;
-			font-family: "Open Sans", sans-serif;
-			font-size: 14px;
-			line-height: 1.4;
-		}
-		</style>
+    a {
+      color: steelblue;
+    }
 
-		<script src="dist/demo.js" type="module"></script>
+    table {
+      width: 100%;
+    }
 
-	</head>
+    table td,
+    table th {
+      border: 0;
+      border-bottom: 1px solid #a4a4a4;
+      text-align: center;
+      background-color: #e0e0e0;
+    }
 
-	<body>
+    table td {
+      background-color: #fdfdfd;
+    }
 
-		<div class="container">
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 20px;
+      border: thin solid #bababa;
+      box-shadow: 3px 3px 5px #bababa;
+      background-color: #fdfdfd;
+      color: #404040;
+      font-family: "Open Sans", sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+  </style>
 
-			<h1>A simple Oxhr demo</h1>
-			(See also console output.)
+  <script src="dist/demo.js" type="module"></script>
 
-			<br /><br />
+</head>
 
-			<label for="loadProgress">File progress:</label>
-			<progress id="loadProgress" min="0" max="100" value="0"> 0% </progress>
+<body>
 
-			<label for="loadBytes">Bytes loaded:</label>
-			<span id="loadBytes"></span>
+  <div class="container">
 
-			<br /><br />
+    <h1>A simple Oxhr demo</h1>
 
-			<input type="button" id="startButton" value="Start JSON download" />
-			<input type="button" id="abortButton" value="Abort JSON download" />
+    <em>(See console log for detailed information)</em>
 
-			<br /><br /><br />
+    <br /><br />
 
-			<input type="button" id="swButton" value="Fetch StarWars data" />
+    <label for="loadProgress">File progress:</label>
+    <progress id="loadProgress" min="0" max="100" value="0"> 0% </progress>
 
-			<br /><br />
+    <label for="loadBytes">Bytes loaded:</label>
+    <span id="loadBytes"></span>
 
-			<a href="https://github.com/Amarok24/Oxhr" target="_blank">GitHub repository</a>
+    <br /><br />
 
-		</div>
+    <input type="button" id="startButton" value="Start large JSON download" />
+    <input type="button" id="abortButton" value="Abort JSON download" />
 
-	</body>
+    <br /><br /><br />
+
+    <input type="button" id="swButton" value="Fetch a StarWars character" />
+
+    <br /><br />
+
+    <h3>XMLHttpRequest.readyState</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Value</th>
+          <th>State</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>0</code></td>
+          <td><code>UNSENT</code></td>
+          <td>Client has been created. <code>open()</code> not called yet.</td>
+        </tr>
+        <tr>
+          <td><code>1</code></td>
+          <td><code>OPENED</code></td>
+          <td><code>open()</code> has been called.</td>
+        </tr>
+        <tr>
+          <td><code>2</code></td>
+          <td><code>HEADERS_RECEIVED</code></td>
+          <td><code>send()</code> has been called, and headers and status are available.
+          </td>
+        </tr>
+        <tr>
+          <td><code>3</code></td>
+          <td><code>LOADING</code></td>
+          <td>Downloading; <code>responseText</code> holds partial data.</td>
+        </tr>
+        <tr>
+          <td><code>4</code></td>
+          <td><code>DONE</code></td>
+          <td>The operation is complete.</td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <br /><br /><br /><br />
+
+    <a href="https://github.com/Amarok24/Oxhr" target="_blank">GitHub repository</a>
+
+  </div>
+
+</body>
+
 </html>
