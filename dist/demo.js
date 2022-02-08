@@ -1,31 +1,38 @@
-import { Oxhr } from "./oxhr.js";
-const startButton = document.querySelector("#startButton");
-const abortButton = document.querySelector("#abortButton");
-const swButton = document.querySelector("#swButton");
-const loadProgress = document.querySelector("#loadProgress");
-const loadBytes = document.querySelector("#loadBytes");
+import { Oxhr } from './oxhr.js';
+import { ResourcesType } from './swapi-schema.js';
+const startButton = document.querySelector('#startButton');
+const abortButton = document.querySelector('#abortButton');
+const swButton = document.querySelector('#swButton');
+const loadProgress = document.querySelector('#loadProgress');
+const loadBytes = document.querySelector('#loadBytes');
 async function fetchRandomStarWarsData() {
-    let response;
+    let peopleResponse;
     const random = Math.floor(Math.random() * 10 + 1);
     const mySimpleOptions = {
-        url: `https://swapi.dev/api/people/${random}`,
-        consoleInfo: "Establishing my simple test connection...",
+        url: `https://swapi.dev/api/${ResourcesType.People}/${random}`,
+        consoleInfo: 'Establishing my simple test connection...',
         onLoadEnd: () => {
-            alert(response);
-        }
+            console.info('Opening browser pop-up message with character data...');
+            alert(JSON.stringify(peopleResponse));
+        },
+        responseType: 'json',
+        debug: true
     };
     const mySimpleConnection = new Oxhr(mySimpleOptions);
-    response = await mySimpleConnection.send();
-    console.log(response);
+    ;
+    peopleResponse = await mySimpleConnection.send();
+    console.log(`Character name: ${peopleResponse.name}`);
+    console.log(peopleResponse);
 }
+fetchRandomStarWarsData();
 const myRequestHeaders = [];
 const myOptions = {
-    url: "https://api.covidtracking.com/v1/states/daily.json",
-    method: "GET",
-    responseType: "json",
+    url: 'https://api.covidtracking.com/v1/states/daily.json',
+    method: 'GET',
+    responseType: 'json',
     requestHeaders: myRequestHeaders,
     timeoutMs: 7000,
-    consoleInfo: "Establishing my test connection...",
+    consoleInfo: 'Establishing my test connection...',
     onLoadEnd: onLoadEnd,
     onTimeOut: onTimeOut,
     onProgress: onProgress,
@@ -36,18 +43,20 @@ async function tryToSendData() {
     let response;
     const myData = `{ "test": 123 }`;
     try {
-        console.log("AWAITING DATA");
+        console.log('AWAITING DATA');
         response = await myConnection.send(myData);
-        console.log("ALL DATA RECEIVED");
-        if (response && response.someFixedResponseData === 123) {
-            console.log("We got someFixedResponseData 123");
+        console.log('ALL DATA RECEIVED');
+        if (response && response.someFixedResponseData === 12345) {
+            console.log('We got someFixedResponseData 12345');
         }
         else {
-            console.log("HTML response OK, but someFixedResponseData not received.");
+            console.log('HTML response OK, but someFixedResponseData not received.');
         }
     }
-    catch (err) {
-        console.log(`An error occured, but we handled it. Error message: ${err.message}`);
+    catch (e) {
+        if (!(e instanceof Error))
+            throw e;
+        console.log(`An error occured, but we handled it. Error message: ${e.message}`);
     }
 }
 function onProgress(percent, bytes) {
@@ -85,4 +94,3 @@ if (abortButton)
     abortButton.addEventListener("click", handleAbortButtonClick);
 if (swButton)
     swButton.addEventListener("click", fetchRandomStarWarsData);
-fetchRandomStarWarsData();

@@ -1,4 +1,4 @@
-# Oxhr v1.1
+# Oxhr v1.2.0
 An object-oriented XHR (XMLHttpRequest) wrapper/library.
 
 ### Modern programmers use fetch, others prefer Oxhr 🐮
@@ -6,11 +6,11 @@ An object-oriented XHR (XMLHttpRequest) wrapper/library.
 <img width="180" alt="Oxhr logo" src="./oxhr-logo.svg" />
 
 ### Why Oxhr?
-- Promise-based (asynchronous)
-- Tiny (2kb minified) and pretty simple
-- Ready to use ES module `oxhr.min.js` for your JavaScript projects
-- No dependencies
 - Written in TypeScript
+- No dependencies
+- Promise-based (asynchronous)
+- Tiny (3kb minified) and pretty simple
+- Ready to use ES module `oxhr.min.js` for your JavaScript projects
 - An alternative to _XMLHttpRequest_ and _fetch_
 - An alternative to feature-rich libraries like [_axios_](https://github.com/axios/axios)
 - A small demo included, see `index.html`
@@ -32,7 +32,7 @@ async function fetchDataExample()
 {
   let response: any;
   const options: IOxhrParams = {
-    url: "https://swapi.dev/api/people/1",
+    url: "https://...",
     consoleInfo: "Establishing my connection...",
     onLoadEnd: () => { console.log("Loading finished!") }
   };
@@ -54,10 +54,11 @@ interface IOxhrParams
   url: string;
   method?: "GET" | "POST" | "HEAD" | "PUT" | "DELETE" | "CONNECT" | "OPTIONS" | "TRACE" | "PATCH";
   responseType?: XMLHttpRequestResponseType;
-  data?: BodyInit | Document | null;
+  data?: XMLHttpRequestBodyInit | Document | null;
   requestHeaders?: IRequestHeader[];
   timeoutMs?: number;
   consoleInfo?: string;
+  debug?: boolean;
   onLoadEnd?: () => void;
   onProgress?: (percent: number, bytes: number) => void;
   onTimeOut?: () => void;
@@ -67,15 +68,16 @@ interface IOxhrParams
 
 ### Parameters
 
-| Parameter      |   Description            | Required | Default   | Accepted types                                        |
-| :------------- | :----------------------- | :------: | :-------: | :---------------------------------------------------- |
-| url            | URL for http request     |   x      |           | string                                                |
-| method         | HTTP request method      |          | "get"     | string ("GET" \| "POST" \| etc...))                   |
-| responseType   | A valid response type    |          | ""        | "", "arraybuffer", "blob", "document", "json", "text" |
-| data           | Data to send             |          | null      | Blob, BufferSource, FormData, URLSearchParams,  ReadableStream, string, Document, null |
-| requestHeaders | Array of IRequestHeader  |          |           | IRequestHeader[]                                      |
-| timeoutMs      | Timeout in milliseconds  |          | 60'000    | number                                                |
-| consoleInfo    | Description for console output |    |           | string                                                |
+| Parameter      |   Description           | Required | Default | Accepted types |
+| :------------- | :----------------------- | :-----: | :----: | :--- |
+| url            | URL for http request     |   x     |         | string |
+| method         | HTTP request method      |   -     | "GET"   | string ("GET" \| "POST" \| etc...)) |
+| responseType   | A valid response type    |   -     | ""      | "", "arraybuffer", "blob", "document", "json", "text" |
+| data           | Data to send             |   -     | null    | Blob, BufferSource, FormData, URLSearchParams,  ReadableStream, string, Document, null |
+| requestHeaders | Array of IRequestHeader  |   -     |         | IRequestHeader[] |
+| timeoutMs      | Timeout in milliseconds  |   -     | 60'000  | number  |
+| consoleInfo    | Description for console output | - |         | string  |
+| debug          | Additional console output | - | false | boolean |
 
 
 ### Callbacks
@@ -107,6 +109,14 @@ __How can I stop a running connection?__
 __Can I open multiple connections at once?__
 - Yes and no. It's not possible using one instance of Oxhr, but you can create multiple (independent) instances. Since Oxhr works with EcmaScript's Promise object you can also make use of Promise.all(), Promise.any() etc. Additionally, you can start multiple "await ... send()" requests using one class instance, they will be handled one after another.
 
+
+## Changelog
+### _v1.2.0_
+- Previous version didn't compile in TypeScript 4.5.4 because of an error, this update fixes it
+- Added new "debug" parameter for more verbose console log
+- Bugfix for custom onLoadEnd method which didn't get triggered in TypeScript 4.5.4
+- Demo in index.html changed to se an interface for incoming JSON data
+- Other minor code changes and cleanup
 
 ---
 
