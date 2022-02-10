@@ -1,12 +1,12 @@
 /*
-Demo of Oxhr, an object-oriented XHR (XMLHttpRequest) wrapper/library.
+Demo of Oxhr, an object-oriented and asynchronous XMLHttpRequest library.
 https://github.com/Amarok24/Oxhr
 */
 
 import {Oxhr} from './oxhr.js';
 import {IPeople, ResourcesType} from './swapi-schema.js';
 import {OxhrError} from './oxhr-error.js';
-import {XhrReadyState} from './xhr-ready-state.js';
+import {XhrReadyState} from './xhr-codes.js';
 import type {IOxhrParams, IRequestHeader} from './oxhr-types.js';
 
 const startButton = document.querySelector<HTMLButtonElement>('#startButton');
@@ -26,7 +26,7 @@ async function fetchRandomStarWarsData(): Promise<void>
   const swOptions: IOxhrParams = {
     // I also recommend this free API for testing: https://webhook.site/
     url: `https://swapi.dev/api/${ ResourcesType.People }/${ random }`,
-    consoleInfo: 'Establishing my simple test connection...',
+    consoleInfo: 'StarWars connection finished, some details below.',
     onLoadEnd: () =>
     {
       console.info('Opening browser pop-up message with character data...');
@@ -34,14 +34,16 @@ async function fetchRandomStarWarsData(): Promise<void>
     },
     // The response of SW-API is in JSON, so we want automatic JSON.parse()
     responseType: 'json',
-    debug: true
+    debug: false
   };
   const mySwConnection = new Oxhr<IPeople>(swOptions);
 
+  console.log(`mySWConnection.instanceId = ${ mySwConnection.instanceId }`);
   peopleResponse = await mySwConnection.send();
   console.log(`Character name: ${ peopleResponse.name }`);
   console.log(peopleResponse);
   console.log(`mySwConnection.readyState = ${ mySwConnection.readyState }`);
+  if (mySwConnection.success) console.log('Success!');
 }
 
 
@@ -74,7 +76,7 @@ const myOptions: IOxhrParams = {
   requestHeaders: myRequestHeaders,
   timeoutMs: 20000,
   debug: true,
-  consoleInfo: 'My test connection has ended, some details below.',
+  consoleInfo: 'My test connection finished, some details below.',
   onLoadEnd: onLoadEnd,
   onTimeOut: onTimeOut,
   onProgress: onProgress,
@@ -98,7 +100,8 @@ async function tryToSendData(): Promise<void>
   try
   {
     console.log('try-block of tryToSendData');
-    console.log(`status code of myConnection is ${ myConnection.status }`);
+    console.log(`myConnection.instanceId = ${ myConnection.instanceId }`);
+    console.log(`XHR status of myConnection is ${ myConnection.status }`);
 
     if ((myConnection.readyState !== XhrReadyState.DONE) && (myConnection.readyState !== XhrReadyState.UNSENT))
     {
@@ -132,7 +135,7 @@ async function tryToSendData(): Promise<void>
   }
   finally
   {
-    console.log(`finally-block, status code of myConnection is ${ myConnection.status }`);
+    console.log(`finally-block, XHR status of myConnection is ${ myConnection.status }`);
   }
 }
 
@@ -141,22 +144,30 @@ function onProgress(percent: number, bytes: number): void
 {
   // Often the total filesize is not known, in such a case percent will be -1
   if (loadProgress) loadProgress.value = percent;
-  if (loadBytes) loadBytes.innerText = bytes + " bytes";
+  if (loadBytes) loadBytes.innerText = bytes + ' bytes';
 }
 
 function onAbort(): void
 {
-  console.log("demo: custom abort handler");
+  console.log('demo: custom abort handler');
+  alert('Connection aborted by user');
 }
 
 function onLoadEnd(): void
 {
   console.log(`demo: custom loadend handler, readyState = ${ myConnection.readyState }`);
+  console.log(`XHR status of myConnection is ${ myConnection.status }`);
+
+  if (myConnection.success)
+  {
+    alert('Success!');
+  }
 }
 
 function onTimeOut(): void
 {
-  console.log("demo: custom timeout handler");
+  console.log('demo: custom timeout handler');
+  alert('Connection time out!');
 }
 
 function handleStartButtonClick()
@@ -167,17 +178,17 @@ function handleStartButtonClick()
 
   tryToSendData();
 
-  console.log("end: handleStartButtonClick");
+  console.log('end: handleStartButtonClick');
 }
 
 function handleAbortButtonClick()
 {
-  console.log("start: handleAbortButtonClick");
+  console.log('start: handleAbortButtonClick');
   myConnection.abort();
-  console.log("end: handleAbortButtonClick");
+  console.log('end: handleAbortButtonClick');
 }
 
 
-if (startButton) startButton.addEventListener("click", handleStartButtonClick);
-if (abortButton) abortButton.addEventListener("click", handleAbortButtonClick);
-if (swButton) swButton.addEventListener("click", fetchRandomStarWarsData);
+if (startButton) startButton.addEventListener('click', handleStartButtonClick);
+if (abortButton) abortButton.addEventListener('click', handleAbortButtonClick);
+if (swButton) swButton.addEventListener('click', fetchRandomStarWarsData);
