@@ -1,5 +1,7 @@
 import { Oxhr } from './oxhr.js';
 import { ResourcesType } from './swapi-schema.js';
+import { OxhrError } from './oxhr-error.js';
+import { XhrReadyState } from './xhr-ready-state.js';
 const startButton = document.querySelector('#startButton');
 const abortButton = document.querySelector('#abortButton');
 const swButton = document.querySelector('#swButton');
@@ -8,7 +10,7 @@ const loadBytes = document.querySelector('#loadBytes');
 async function fetchRandomStarWarsData() {
     let peopleResponse;
     const random = Math.floor(Math.random() * 10 + 1);
-    const mySimpleOptions = {
+    const swOptions = {
         url: `https://swapi.dev/api/${ResourcesType.People}/${random}`,
         consoleInfo: 'Establishing my simple test connection...',
         onLoadEnd: () => {
@@ -18,11 +20,11 @@ async function fetchRandomStarWarsData() {
         responseType: 'json',
         debug: true
     };
-    const mySimpleConnection = new Oxhr(mySimpleOptions);
-    ;
-    peopleResponse = await mySimpleConnection.send();
+    const mySwConnection = new Oxhr(swOptions);
+    peopleResponse = await mySwConnection.send();
     console.log(`Character name: ${peopleResponse.name}`);
     console.log(peopleResponse);
+    console.log(`mySwConnection.readyState = ${mySwConnection.readyState}`);
 }
 fetchRandomStarWarsData();
 const myRequestHeaders = [];
@@ -31,7 +33,8 @@ const myOptions = {
     method: 'GET',
     responseType: 'json',
     requestHeaders: myRequestHeaders,
-    timeoutMs: 7000,
+    timeoutMs: 20000,
+    debug: true,
     consoleInfo: 'Establishing my test connection...',
     onLoadEnd: onLoadEnd,
     onTimeOut: onTimeOut,
@@ -43,9 +46,15 @@ async function tryToSendData() {
     let response;
     const myData = `{ "test": 123 }`;
     try {
-        console.log('AWAITING DATA');
+        console.log('try-block of tryToSendData');
+        console.log(`status code of myConnection is ${myConnection.status}`);
+        if ((myConnection.readyState !== XhrReadyState.DONE) && (myConnection.readyState !== XhrReadyState.UNSENT)) {
+            console.log('You have probably clicked on that button while a connection is being processed.');
+            return;
+        }
+        console.log('Now we will await myConnection.send');
         response = await myConnection.send(myData);
-        console.log('ALL DATA RECEIVED');
+        console.log('await myConnection.send is DONE, all data received!');
         if (response && response.someFixedResponseData === 12345) {
             console.log('We got someFixedResponseData 12345');
         }
@@ -54,9 +63,13 @@ async function tryToSendData() {
         }
     }
     catch (e) {
-        if (!(e instanceof Error))
+        if (!(e instanceof OxhrError))
             throw e;
-        console.log(`An error occured, but we handled it. Error message: ${e.message}`);
+        console.log(`Oxhr error message: ${e.message}`);
+        console.log(e);
+    }
+    finally {
+        console.log(`finally-block, status code of myConnection is ${myConnection.status}`);
     }
 }
 function onProgress(percent, bytes) {

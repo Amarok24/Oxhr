@@ -4,9 +4,10 @@ https://github.com/Amarok24/Oxhr
 */
 
 import {Oxhr} from './oxhr.js';
-import type {IOxhrParams, IRequestHeader} from './oxhr-types.js';
-
 import {IPeople, ResourcesType} from './swapi-schema.js';
+import {OxhrError} from './oxhr-error.js';
+import {XhrReadyState} from './xhr-ready-state.js';
+import type {IOxhrParams, IRequestHeader} from './oxhr-types.js';
 
 const startButton = document.querySelector<HTMLButtonElement>('#startButton');
 const abortButton = document.querySelector<HTMLButtonElement>('#abortButton');
@@ -22,7 +23,7 @@ async function fetchRandomStarWarsData(): Promise<void>
 {
   let peopleResponse: IPeople;
   const random: number = Math.floor(Math.random() * 10 + 1);
-  const mySimpleOptions: IOxhrParams = {
+  const swOptions: IOxhrParams = {
     // I also recommend this free API for testing: https://webhook.site/
     url: `https://swapi.dev/api/${ ResourcesType.People }/${ random }`,
     consoleInfo: 'Establishing my simple test connection...',
@@ -35,11 +36,12 @@ async function fetchRandomStarWarsData(): Promise<void>
     responseType: 'json',
     debug: true
   };
-  const mySimpleConnection = new Oxhr<IPeople>(mySimpleOptions);;
+  const mySwConnection = new Oxhr<IPeople>(swOptions);
 
-  peopleResponse = await mySimpleConnection.send();
+  peopleResponse = await mySwConnection.send();
   console.log(`Character name: ${ peopleResponse.name }`);
   console.log(peopleResponse);
+  console.log(`mySwConnection.readyState = ${ mySwConnection.readyState }`);
 }
 
 
@@ -70,8 +72,9 @@ const myOptions: IOxhrParams = {
   responseType: 'json',
   // data: `{ "test": 123 }`, -- Data may be passed before calling the 'send' method.
   requestHeaders: myRequestHeaders,
-  timeoutMs: 7000,
-  consoleInfo: 'Establishing my test connection...',
+  timeoutMs: 20000,
+  debug: true,
+  consoleInfo: 'My test connection has ended, some details below.',
   onLoadEnd: onLoadEnd,
   onTimeOut: onTimeOut,
   onProgress: onProgress,
@@ -94,10 +97,19 @@ async function tryToSendData(): Promise<void>
 
   try
   {
-    console.log('AWAITING DATA');
+    console.log('try-block of tryToSendData');
+    console.log(`status code of myConnection is ${ myConnection.status }`);
+
+    if ((myConnection.readyState !== XhrReadyState.DONE) && (myConnection.readyState !== XhrReadyState.UNSENT))
+    {
+      console.log('You have probably clicked on that button while a connection is being processed.');
+      return;
+    }
+
+    console.log('Now we will await myConnection.send');
     // In this example we pass the data to be sent with request with the 'send' method.
     response = await myConnection.send(myData);
-    console.log('ALL DATA RECEIVED');
+    console.log('await myConnection.send is DONE, all data received!');
 
     if (response && response.someFixedResponseData === 12345)
     {
@@ -114,10 +126,13 @@ async function tryToSendData(): Promise<void>
   }
   catch (e: unknown)
   {
-    // 'err' is error message from "reject( new Error() )" lines in oxhr.ts
-    if (!(e instanceof Error)) throw e;
-    //TODO: custom Error instance, OxhrError
-    console.log(`An error occured, but we handled it. Error message: ${ e.message }`);
+    if (!(e instanceof OxhrError)) throw e;
+    console.log(`Oxhr error message: ${ e.message }`);
+    console.log(e);
+  }
+  finally
+  {
+    console.log(`finally-block, status code of myConnection is ${ myConnection.status }`);
   }
 }
 

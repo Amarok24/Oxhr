@@ -15,22 +15,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+import {OxhrError} from './oxhr-error.js';
+import {XhrReadyState} from './xhr-ready-state.js';
 import type {IOxhrParams, IResolve, IReject, HttpRequestMethod} from "./oxhr-types.js";
 
 export {Oxhr};
 
 
 type CombinedDataType = XMLHttpRequestBodyInit | Document | null;
-
-enum XhrReadyState
-{
-  // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/readyState
-  UNSENT = 0, // Client has been created. open() not called yet.
-  OPENED, // open() has been called.
-  HEADERS_RECEIVED, // send() has been called, and headers and status are available.
-  LOADING, // Downloading; responseText holds partial data.
-  DONE // The operation is complete.
-}
 
 
 class Oxhr<T = unknown>
@@ -48,18 +40,19 @@ class Oxhr<T = unknown>
     this.method = parameters.method ?? 'GET';
     this._data = parameters.data ?? null;
     this.responseType = parameters.responseType ?? '';
+    // Here this._xhr.readyState == 0
   }
 
 
-  // Small tutorial: here 'httpExecutor' is an executor function, used as parameter for new Promise (constructor). It should return void (return value not used anywhere).
-  // The executor function must accept two callable functions as parameters which are  internally processed by the Promise object. Inside the executor function we only have to call resolve/reject functions manually depending on success/fail.
+  // Small tutorial: here 'httpExecutor' is an executor function, used as parameter for new Promise (constructor).
+  // The executor function must accept two callable functions as parameters which are internally processed by a new Promise instance. Inside the executor function we only have to call resolve/reject functions manually depending on success/fail.
 
   private _httpExecutor = (resolve: IResolve<T>, reject: IReject): void =>
   {
     // httpExecutor must be an arrow function because AFs don't have own binding to 'this'.
     const handleLoad = (ev: ProgressEvent<XMLHttpRequestEventTarget>): void =>
     {
-      if (this.params.debug) console.log(`Oxhr: handleLoad(), status: ${ this._xhr.status }`);
+      this.debugMessage(`Oxhr: handleLoad(), status: ${ this._xhr.status }`);
 
       // https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
       if (this._xhr.status >= 200 && this._xhr.status < 300)
@@ -74,7 +67,7 @@ class Oxhr<T = unknown>
         // Here _xhr.response would usually (always?) be null.
         reject(
           // Reject with full response content to use later.
-          new Error(`HTML status code ${ this._xhr.status }`)
+          new OxhrError(`HTML status code ${ this._xhr.status }`)
         );
       }
     };
@@ -82,8 +75,8 @@ class Oxhr<T = unknown>
     // Serious errors like timeout / unreachable URL / no internet connection.
     const handleError = (ev: ProgressEvent<XMLHttpRequestEventTarget>): void =>
     {
-      if (this.params.debug) console.log(`Oxhr: handleError()`);
-      reject(new Error('Oxhr: failed to send request!'));
+      this.debugMessage(`Oxhr: handleError()`);
+      reject(new OxhrError('Failed to send request!'));
       if (this.params.consoleInfo) console.group(this.params.consoleInfo);
       console.log(ev);
       console.error(`xhr status: ${ this._xhr.status }`);
@@ -109,13 +102,13 @@ class Oxhr<T = unknown>
     {
       // Notice that we don't "throw" an error here, this would be unhandled later.
       // Here _xhr.status is 0.
-      if (this.params.debug) console.log('Oxhr: handleTimeout()');
-      reject(new Error('TimeoutError'));
+      this.debugMessage('Oxhr: handleTimeout()');
+      reject(new OxhrError('Timeout'));
     };
 
     const handleLoadEnd = (): void =>
     {
-      if (this.params.debug) console.log('Oxhr: handleLoadEnd(), removing event listeners and calling custom onLoadEnd (if provided)');
+      this.debugMessage('Oxhr: handleLoadEnd(), removing event listeners and calling custom onLoadEnd (if provided)');
 
       // Only event listeners which call "resolve" or "reject" need to be re-set with every new "await ... send()", because closures are used (listeners are bound to the individual scope of _httpExecutor, which is a private method and gets re-called with every new "send" method). But for the sake of simplicity let's just remove all event listeners here.
       this._xhr.removeEventListener('load', handleLoad);
@@ -155,7 +148,7 @@ class Oxhr<T = unknown>
       {
         if ((h.header !== '') && (h.value !== ''))
         {
-          console.log(`Oxhr: setting custom request header '${ h.header }, ${ h.value }'`);
+          this.debugMessage(`Oxhr: setting custom request header '${ h.header }, ${ h.value }'`);
           this._xhr.setRequestHeader(h.header, h.value);
         }
       });
@@ -172,7 +165,7 @@ class Oxhr<T = unknown>
     if (!this._eventHandlersAssigned)
     {
       this._eventHandlersAssigned = true;
-      if (this.params.debug) console.log('Oxhr: adding event listeners');
+      this.debugMessage('Oxhr: adding event listeners');
 
       // All XHR events: https://xhr.spec.whatwg.org/#events
       this._xhr.addEventListener('load', handleLoad);
@@ -196,12 +189,18 @@ class Oxhr<T = unknown>
     if (this._xhr.readyState !== XhrReadyState.OPENED)
     {
       // Only when readyState is opened it is possible to call 'send', else error will be thrown. It is now safe to define connection as running.
-      console.log('Oxhr warning: connection not opened, this will cause an error.');
+      this.debugMessage('Oxhr warning: connection not opened, this will cause an error.');
     }
 
     // The send() method is async by default, notification of a completed transaction is provided using event listeners.
     this._xhr.send(this._data);
-  };
+  }; // END of _httpExecutor
+
+
+  private debugMessage(m: string): void
+  {
+    if (this.params.debug) console.log(m);
+  }
 
 
   get readyState(): XhrReadyState
@@ -210,16 +209,24 @@ class Oxhr<T = unknown>
   }
 
 
+  get status(): XhrReadyState
+  {
+    return this._xhr.status;
+  }
+
+
   send(data?: CombinedDataType): Promise<T> | never
   {
-    if (this._xhr.readyState === XhrReadyState.LOADING)
+    this.debugMessage(`Oxhr: _xhr.readyState ${ this._xhr.readyState }`);
+    if (this._xhr.readyState !== XhrReadyState.UNSENT)
     {
-      throw new Error('A connection is already running.');
+      throw new OxhrError('A violation occured, the same connection is already being processed or has already finished.');
     }
 
     this._data = data ?? this._data;
 
     // Send has to return type Promise to work correctly with 'await'.
+    // "this._httpExecutor" will be called before the Promise gets returned.
     return new Promise<T>(this._httpExecutor);
   }
 
@@ -228,10 +235,10 @@ class Oxhr<T = unknown>
   {
     if (this._xhr.readyState !== XhrReadyState.LOADING)
     {
-      console.log('Cannot abort, no connection running');
+      console.log('Oxhr: Cannot abort because no connection is running.');
       return;
     }
-    console.log('Aborting connection...');
+    console.log('Oxhr: Aborting connection...');
     this._xhr.abort();
   }
 
