@@ -1,4 +1,4 @@
-# Oxhr v1.2.0
+# Oxhr v1.2.1
 An object-oriented and asynchronous XHR (XMLHttpRequest) wrapper.
 
 ### Modern programmers use fetch, others prefer Oxhr 🐮
@@ -117,6 +117,9 @@ __Can I open multiple connections at once?__
 
 
 ## Changelog
+### _v1.2.1_
+- Fixed a too strict connection handling, now the same Oxhr instance can safely be re-used for further requests.
+
 ### _v1.2.0_
 - Many code improvements, now the library is more robust and handles all kind of wrong usage in a nice way
 - Added 4 new getters: instanceId, status, success, isProcessed

@@ -6,6 +6,7 @@ Licensed under the Apache License, Version 2.0
 
 import {OxhrError} from './oxhr-error.js';
 import {XhrReadyState, XhrStatus} from './xhr-codes.js';
+import {generateUUID} from './generate-uuid.js';
 
 import type {IResolve, IReject, IOxhrParams, HttpRequestMethod, CombinedDataType} from "./oxhr-types.js";
 
@@ -15,6 +16,7 @@ export {XhrHandler};
 class XhrHandler<T>
 {
   private _eventHandlersAssigned: boolean = false;
+  private _instanceId: string = generateUUID();
   protected readonly xhr: XMLHttpRequest = new XMLHttpRequest();
   protected data: CombinedDataType;
   protected params: IOxhrParams;
@@ -27,6 +29,7 @@ class XhrHandler<T>
     this.method = parameters.method ?? 'GET';
     this.data = parameters.data ?? null;
     this.responseType = parameters.responseType ?? '';
+    this.debugMessage('A new instance was created.');
     // Here this.xhr.readyState == 0
   }
 
@@ -65,7 +68,7 @@ class XhrHandler<T>
       reject(new OxhrError('Failed to send request!'));
       if (this.params.consoleMessage) console.group(this.params.consoleMessage);
       console.log(ev);
-      console.error(`xhr status: ${ this.xhr.status }`);
+      console.warn(`xhr status: ${ this.xhr.status }`);
       if (this.params.consoleMessage) console.groupEnd();
     };
 
@@ -86,8 +89,7 @@ class XhrHandler<T>
 
     const handleTimeout = (): void =>
     {
-      // Notice that we don't "throw" an error here, this would be unhandled later.
-      // Here xhr.status is 0.
+      // Notice that we don't "throw" an error here, this would be unhandled later. Note: xhr.status is 0.
       this.debugMessage('handleTimeout()');
       reject(new OxhrError('Timeout'));
     };
@@ -118,7 +120,7 @@ class XhrHandler<T>
       this._eventHandlersAssigned = false;
     };
 
-
+    // Calling the "open" method for an already active request (one for which open() has already been called) is the equivalent of calling abort().
     this.xhr.open(this.method, this.params.url);
 
     if (this.params.requestHeaders)
@@ -127,7 +129,7 @@ class XhrHandler<T>
       {
         if ((h.header !== '') && (h.value !== ''))
         {
-          this.debugMessage(`setting custom request header '${ h.header }, ${ h.value }'`);
+          this.debugMessage(`Setting custom request header '${ h.header }, ${ h.value }'`);
           this.xhr.setRequestHeader(h.header, h.value);
         }
       });
@@ -143,7 +145,7 @@ class XhrHandler<T>
     if (!this._eventHandlersAssigned)
     {
       this._eventHandlersAssigned = true;
-      this.debugMessage('adding event listeners');
+      this.debugMessage('Adding event listeners.');
 
       // All XHR events: https://xhr.spec.whatwg.org/#events
       this.xhr.addEventListener('load', handleLoad);
@@ -167,7 +169,7 @@ class XhrHandler<T>
     if (this.xhr.readyState !== XhrReadyState.OPENED)
     {
       // Only when readyState is opened it is possible to call 'send', else error will be thrown. It is now safe to define connection as running.
-      this.debugMessage('warning, connection not opened, this will cause an error.');
+      this.debugMessage('Warning, connection not opened, this will cause an error.');
     }
 
     // The send() method is async by default, notification of a completed transaction is provided using event listeners.
@@ -177,7 +179,7 @@ class XhrHandler<T>
 
   protected debugMessage(m: string): void
   {
-    if (this.params.debug) console.log(`Oxhr: ${ m }`);
+    if (this.params.debug) console.info(`Oxhr: ${ m }\nInstance UUID ${ this._instanceId }`);
   }
 
   /**
@@ -219,6 +221,13 @@ class XhrHandler<T>
     );
   }
 
+  /**
+   * Returns a unique instance UUID.
+   */
+  get instanceId(): string
+  {
+    return this._instanceId;
+  }
 }
 
 // TODO: implement event handlers for processing uploads
