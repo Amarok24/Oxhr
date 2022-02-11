@@ -20,12 +20,12 @@ export type {
  * @param data Data to send with request. Supports all valid data types. Default: null.
  * @param responseType A valid response type. Default: "".
  * @param requestHeaders Custom HTTP headers. Array of IRequestHeader.
- * @param timeoutMs Timeout in milliseconds after which connection will be interrupted.
- * @param consoleInfo Description of console.group for console output.
+ * @param timeoutMs Timeout in milliseconds. After that time the request will be terminated.
+ * @param consoleMessage Description for console output after loading is done.
  * @param debug Output additional info to the browser console (debug mode).
  * @param onLoadEnd Called after load success, timeout, abort or error.
  * @param onProgress Callback function to which the loading progress in % shall be passed.
- * @param onTimeOut Callback function for timeout.
+ * @param onTimeout The ionTimeout callback is fired when progression is terminated due to preset time expiring (see timeoutMs).
  * @param onAbort Callback function when an open connection is aborted.
  */
 interface IOxhrParams
@@ -36,11 +36,11 @@ interface IOxhrParams
   data?: CombinedDataType;
   requestHeaders?: IRequestHeader[];
   timeoutMs?: number;
-  consoleInfo?: string;
+  consoleMessage?: string;
   debug?: boolean;
   onLoadEnd?: () => void;
   onProgress?: (percent: number, bytes: number) => void;
-  onTimeOut?: () => void;
+  onTimeout?: () => void;
   onAbort?: () => void;
 }
 

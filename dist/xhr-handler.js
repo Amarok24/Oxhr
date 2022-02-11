@@ -11,10 +11,10 @@ class XhrHandler {
                 if (this.xhr.status >= XhrStatus.LOADING &&
                     this.xhr.status < XhrStatus.MULTIPLE_CHOICE) {
                     resolve(this.xhr.response);
-                    if (this.params.consoleInfo)
-                        console.group(this.params.consoleInfo);
+                    if (this.params.consoleMessage)
+                        console.group(this.params.consoleMessage);
                     console.log(`${ev.loaded} bytes loaded.`);
-                    if (this.params.consoleInfo)
+                    if (this.params.consoleMessage)
                         console.groupEnd();
                 }
                 else {
@@ -24,11 +24,11 @@ class XhrHandler {
             const handleError = (ev) => {
                 this.debugMessage(`handleError()`);
                 reject(new OxhrError('Failed to send request!'));
-                if (this.params.consoleInfo)
-                    console.group(this.params.consoleInfo);
+                if (this.params.consoleMessage)
+                    console.group(this.params.consoleMessage);
                 console.log(ev);
                 console.error(`xhr status: ${this.xhr.status}`);
-                if (this.params.consoleInfo)
+                if (this.params.consoleMessage)
                     console.groupEnd();
             };
             const handleProgress = (ev) => {
@@ -54,8 +54,8 @@ class XhrHandler {
                 this.xhr.removeEventListener('progress', handleProgress);
                 if (this.params.onAbort)
                     this.xhr.removeEventListener('abort', this.params.onAbort);
-                if (this.params.onTimeOut) {
-                    this.xhr.removeEventListener('timeout', this.params.onTimeOut);
+                if (this.params.onTimeout) {
+                    this.xhr.removeEventListener('timeout', this.params.onTimeout);
                 }
                 else {
                     this.xhr.removeEventListener('timeout', handleTimeout);
@@ -72,7 +72,7 @@ class XhrHandler {
                     }
                 });
             }
-            this.xhr.timeout = this.params.timeoutMs ?? 60000;
+            this.xhr.timeout = this.params.timeoutMs ?? 0;
             this.xhr.responseType = this.responseType;
             if (!this._eventHandlersAssigned) {
                 this._eventHandlersAssigned = true;
@@ -83,8 +83,8 @@ class XhrHandler {
                 this.xhr.addEventListener('progress', handleProgress);
                 if (this.params.onAbort)
                     this.xhr.addEventListener('abort', this.params.onAbort);
-                if (this.params.onTimeOut) {
-                    this.xhr.addEventListener('timeout', this.params.onTimeOut);
+                if (this.params.onTimeout) {
+                    this.xhr.addEventListener('timeout', this.params.onTimeout);
                 }
                 else {
                     this.xhr.addEventListener('timeout', handleTimeout);
@@ -113,5 +113,9 @@ class XhrHandler {
     get success() {
         return (this.xhr.readyState === XhrReadyState.DONE &&
             this.xhr.status === XhrStatus.OK);
+    }
+    get isProcessed() {
+        return (this.xhr.readyState !== XhrReadyState.DONE &&
+            this.xhr.readyState !== XhrReadyState.UNSENT);
     }
 }

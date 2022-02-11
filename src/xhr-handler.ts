@@ -44,9 +44,9 @@ class XhrHandler<T>
         this.xhr.status < XhrStatus.MULTIPLE_CHOICE)
       {
         resolve(this.xhr.response);
-        if (this.params.consoleInfo) console.group(this.params.consoleInfo);
+        if (this.params.consoleMessage) console.group(this.params.consoleMessage);
         console.log(`${ ev.loaded } bytes loaded.`);
-        if (this.params.consoleInfo) console.groupEnd();
+        if (this.params.consoleMessage) console.groupEnd();
       }
       else
       {
@@ -63,10 +63,10 @@ class XhrHandler<T>
     {
       this.debugMessage(`handleError()`);
       reject(new OxhrError('Failed to send request!'));
-      if (this.params.consoleInfo) console.group(this.params.consoleInfo);
+      if (this.params.consoleMessage) console.group(this.params.consoleMessage);
       console.log(ev);
       console.error(`xhr status: ${ this.xhr.status }`);
-      if (this.params.consoleInfo) console.groupEnd();
+      if (this.params.consoleMessage) console.groupEnd();
     };
 
     const handleProgress = (ev: ProgressEvent<XMLHttpRequestEventTarget>): void =>
@@ -79,7 +79,7 @@ class XhrHandler<T>
       }
       else
       {
-        // If ev.total is unknown then it is set to 0 automatically.
+        // If ev.total is unknown then it is set automatically to 0.
         if (this.params.onProgress) this.params.onProgress(-1, ev.loaded);
       }
     };
@@ -105,9 +105,9 @@ class XhrHandler<T>
       //if (this.params.onLoadEnd) this.xhr.removeEventListener('loadend', this.params.onLoadEnd);
       if (this.params.onAbort) this.xhr.removeEventListener('abort', this.params.onAbort);
 
-      if (this.params.onTimeOut)
+      if (this.params.onTimeout)
       {
-        this.xhr.removeEventListener('timeout', this.params.onTimeOut);
+        this.xhr.removeEventListener('timeout', this.params.onTimeout);
       }
       else
       {
@@ -134,9 +134,8 @@ class XhrHandler<T>
     }
 
     // Timeout on client side differs from server timeout. Default timeout is 0 (never).
-    // If timeout > 0 specified then fetching data will be interrupted after given time
-    // and the "timeout" event and "loadend" events will be triggered.
-    this.xhr.timeout = this.params.timeoutMs ?? 60000;
+    // If timeout > 0 specified then fetching data will be interrupted after given time and the "timeout" event and "loadend" events will be triggered.
+    this.xhr.timeout = this.params.timeoutMs ?? 0;
 
     // If respType == "json" then XMLHttpRequest will perform JSON.parse().
     this.xhr.responseType = this.responseType;
@@ -155,9 +154,9 @@ class XhrHandler<T>
 
       if (this.params.onAbort) this.xhr.addEventListener('abort', this.params.onAbort);
 
-      if (this.params.onTimeOut)
+      if (this.params.onTimeout)
       {
-        this.xhr.addEventListener('timeout', this.params.onTimeOut);
+        this.xhr.addEventListener('timeout', this.params.onTimeout);
       }
       else
       {
@@ -205,6 +204,18 @@ class XhrHandler<T>
     return (
       this.xhr.readyState === XhrReadyState.DONE &&
       this.xhr.status === XhrStatus.OK
+    );
+  }
+
+  /**
+   * Returns true if a request is currently being processed.
+   * You may want to use it to avoid execution of a second await-Promise task on the same Oxhr instance.
+   */
+  get isProcessed(): boolean
+  {
+    return (
+      this.xhr.readyState !== XhrReadyState.DONE &&
+      this.xhr.readyState !== XhrReadyState.UNSENT
     );
   }
 

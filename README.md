@@ -1,5 +1,5 @@
 # Oxhr v1.2.0
-An object-oriented XHR (XMLHttpRequest) wrapper/library.
+An object-oriented and asynchronous XHR (XMLHttpRequest) wrapper.
 
 ### Modern programmers use fetch, others prefer Oxhr 🐮
 
@@ -7,18 +7,15 @@ An object-oriented XHR (XMLHttpRequest) wrapper/library.
 
 ### Why Oxhr?
 - Written in TypeScript
-- No dependencies
 - Promise-based (asynchronous)
+- Modular (JavaScript modules)
 - Tiny (under 5kb minified)
-- Robust and simple
+- No dependencies
+- Robust and simple, useful for most tasks
 - An alternative to _XMLHttpRequest_ and _fetch_
-- An alternative to feature-rich libraries like [_axios_](https://github.com/axios/axios)
+- An alternative to feature-rich and complex libraries like [_axios_](https://github.com/axios/axios)
 
-A small demo is included, see `index.html`.
-
-If you are not familiar with ES modules have a look [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).
-
-There is also an old version of the library called jXhr which was not written using OOP, see [here](https://github.com/Amarok24/Oxhr/tree/non-oop-version).
+A small demo is included, see `index.html`. If you prefer a plain .js file instead of a modular system you can use a bundler to combine all modules into one file; for such a task I recommend [Deno](https://deno.land/) which has a bundle feature.
 
 ---
 ## API
@@ -42,7 +39,7 @@ async function fetchDataExample()
 
   // Send request to the server and output response data to console.
   response = await myConnection.send();
-  console.log(result);
+  console.log(response);
 }
 ```
 
@@ -57,11 +54,11 @@ interface IOxhrParams
   data?: XMLHttpRequestBodyInit | Document | null;
   requestHeaders?: IRequestHeader[];
   timeoutMs?: number;
-  consoleInfo?: string;
+  consoleMessage?: string;
   debug?: boolean;
   onLoadEnd?: () => void;
   onProgress?: (percent: number, bytes: number) => void;
-  onTimeOut?: () => void;
+  onTimeout?: () => void;
   onAbort?: () => void;
 }
 ```
@@ -72,11 +69,11 @@ interface IOxhrParams
 | :------------- | :----------------------- | :-----: | :----: | :--- |
 | url            | URL for http request     |   x     |         | string |
 | method         | HTTP request method      |   -     | "GET"   | string ("GET" \| "POST" \| etc...)) |
-| responseType   | A valid response type    |   -     | ""      | "", "arraybuffer", "blob", "document", "json", "text" |
+| responseType   | One of response types    |   -     | ""      | "", "arraybuffer", "blob", "document", "json", "text" |
 | data           | Data to send             |   -     | null    | Blob, BufferSource, FormData, URLSearchParams,  ReadableStream, string, Document, null |
 | requestHeaders | Array of IRequestHeader  |   -     |         | IRequestHeader[] |
-| timeoutMs      | Timeout in milliseconds  |   -     | 60'000  | number  |
-| consoleInfo    | Description for console output after loading is done. | - |         | string  |
+| timeoutMs      | Timeout in milliseconds.  If the request takes longer, it will be terminated.  |   -   | 0  | number  |
+| consoleMessage    | Description for console output after loading is done. | - |         | string  |
 | debug          | Additional console output | - | false | boolean |
 
 
@@ -86,10 +83,10 @@ interface IOxhrParams
 | :--        | :--                                           | :--                              |
 | onLoadEnd  | Called after success, timeout, abort or error | --                               |
 | onProgress | Ongoing loading progress in percent and bytes | (percent: number, bytes: number) |
-| onTimeOut  | Time-out callback (see timeoutMs parameter)   | --                               |
+| onTimeout  | Timeout callback (see timeoutMs parameter)   | --                               |
 | onAbort    | When an open connection gets aborted          | --                               |
 
-Please note that progress in % must not always work because it depends on server settings (not all connections give you the total data/file size).
+Please note that progress in % must not always work because it depends on server settings (not all connections give you the total data/file size in advance).
 
 ### Methods
 
@@ -106,9 +103,9 @@ Please note that progress in % must not always work because it depends on server
 | instanceId   | A unique ID of the Oxhr instance (UUID). | 
 | readyState  | The XHR readyState code.    | 
 | status  | The XHR status code.   |
-| success  | Returns _true_ if transfer was successful (readyState is DONE and status is OK).  | 
+| success  | Returns _true_ if transfer was successful (readyState is DONE and status is OK).  |
+| isProcessed  | Returns _true_ if a request is already being processed. |
 
-There is also a simple getter for reading the "readyState" of current XMLHttpRequest connection.
 
 ## FAQs
 
@@ -121,13 +118,13 @@ __Can I open multiple connections at once?__
 
 ## Changelog
 ### _v1.2.0_
-- Previous version didn't compile in TypeScript 4.5.4 because of an error, this update fixes it
-- Added new "debug" parameter for more verbose console log
-- Several small bugfixes, one big bugfix for custom onLoadEnd method which didn't get triggered in TypeScript 4.5.4
-- Added 3 new getters: instanceId, status, success
-- Demo in index.html changed significantly
 - Many code improvements, now the library is more robust and handles all kind of wrong usage in a nice way
+- Added 4 new getters: instanceId, status, success, isProcessed
 - Major code refactoring
+- Previous version didn't compile in TypeScript 4.5.4 because of an error, this update fixes it
+- Several small bugfixes, one big bugfix for custom onLoadEnd method which didn't get triggered in TypeScript 4.5.4
+- Added new "debug" parameter for more verbose console log
+- Demo in index.html changed significantly
 
 ---
 
