@@ -1,9 +1,11 @@
 import { OxhrError } from './oxhr-error.js';
 import { XhrReadyState, XhrStatus } from './xhr-codes.js';
+import { generateUUID } from './generate-uuid.js';
 export { XhrHandler };
 class XhrHandler {
     constructor(parameters) {
         this._eventHandlersAssigned = false;
+        this._instanceId = generateUUID();
         this.xhr = new XMLHttpRequest();
         this.xhrExecutor = (resolve, reject) => {
             const handleLoad = (ev) => {
@@ -27,7 +29,7 @@ class XhrHandler {
                 if (this.params.consoleMessage)
                     console.group(this.params.consoleMessage);
                 console.log(ev);
-                console.error(`xhr status: ${this.xhr.status}`);
+                console.warn(`xhr status: ${this.xhr.status}`);
                 if (this.params.consoleMessage)
                     console.groupEnd();
             };
@@ -67,7 +69,7 @@ class XhrHandler {
             if (this.params.requestHeaders) {
                 this.params.requestHeaders.forEach((h) => {
                     if ((h.header !== '') && (h.value !== '')) {
-                        this.debugMessage(`setting custom request header '${h.header}, ${h.value}'`);
+                        this.debugMessage(`Setting custom request header '${h.header}, ${h.value}'`);
                         this.xhr.setRequestHeader(h.header, h.value);
                     }
                 });
@@ -76,7 +78,7 @@ class XhrHandler {
             this.xhr.responseType = this.responseType;
             if (!this._eventHandlersAssigned) {
                 this._eventHandlersAssigned = true;
-                this.debugMessage('adding event listeners');
+                this.debugMessage('Adding event listeners.');
                 this.xhr.addEventListener('load', handleLoad);
                 this.xhr.addEventListener('loadend', handleLoadEnd);
                 this.xhr.addEventListener('error', handleError);
@@ -91,7 +93,7 @@ class XhrHandler {
                 }
             }
             if (this.xhr.readyState !== XhrReadyState.OPENED) {
-                this.debugMessage('warning, connection not opened, this will cause an error.');
+                this.debugMessage('Warning, connection not opened, this will cause an error.');
             }
             this.xhr.send(this.data);
         };
@@ -99,10 +101,11 @@ class XhrHandler {
         this.method = parameters.method ?? 'GET';
         this.data = parameters.data ?? null;
         this.responseType = parameters.responseType ?? '';
+        this.debugMessage('A new instance was created.');
     }
     debugMessage(m) {
         if (this.params.debug)
-            console.log(`Oxhr: ${m}`);
+            console.info(`Oxhr: ${m}\nInstance UUID ${this._instanceId}`);
     }
     get readyState() {
         return this.xhr.readyState;
@@ -117,5 +120,8 @@ class XhrHandler {
     get isProcessed() {
         return (this.xhr.readyState !== XhrReadyState.DONE &&
             this.xhr.readyState !== XhrReadyState.UNSENT);
+    }
+    get instanceId() {
+        return this._instanceId;
     }
 }

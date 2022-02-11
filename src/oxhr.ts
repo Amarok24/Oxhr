@@ -16,9 +16,7 @@ limitations under the License.
 */
 
 import {XhrHandler} from './xhr-handler.js';
-import {OxhrError} from './oxhr-error.js';
 import {XhrReadyState} from './xhr-codes.js';
-import {generateUUID} from './generate-uuid.js';
 
 import type {IOxhrParams, CombinedDataType} from "./oxhr-types.js";
 
@@ -27,27 +25,18 @@ export {Oxhr};
 
 class Oxhr<T = unknown> extends XhrHandler<T>
 {
-  private _instanceId: string = generateUUID();
-
   constructor(parameters: IOxhrParams)
   {
     super(parameters);
   }
 
-  /**
-   * Returns a unique instance UUID.
-   */
-  get instanceId(): string
-  {
-    return this._instanceId;
-  }
-
   send(data?: CombinedDataType): Promise<T> | never
   {
     this.debugMessage(`xhr.readyState ${ this.xhr.readyState }`);
-    if (this.xhr.readyState !== XhrReadyState.UNSENT)
+    if (this.isProcessed)
     {
-      throw new OxhrError('A violation occured, the same connection is already being processed or has already finished.');
+      // Calling the "open" method for an already active request (one for which open() has already been called) is the equivalent of calling abort().
+      console.warn(`Oxhr: Either a request is being processed or has already finished. A new request using the same Oxhr instance will be opened.\nInstace UUID ${this.instanceId}`);
     }
 
     this.data = data ?? this.data;

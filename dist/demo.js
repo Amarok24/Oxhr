@@ -1,6 +1,6 @@
 import { Oxhr } from './oxhr.js';
-import { ResourcesType } from './swapi-schema.js';
 import { OxhrError } from './oxhr-error.js';
+import { ResourcesType } from './swapi-schema.js';
 const startButton = document.querySelector('#startButton');
 const abortButton = document.querySelector('#abortButton');
 const swButton = document.querySelector('#swButton');
@@ -49,12 +49,7 @@ async function tryToSendData() {
     const myData = `{ "test": 123 }`;
     try {
         console.log('try-block of tryToSendData');
-        console.log(`myConnection.instanceId = ${myConnection.instanceId}`);
         console.log(`XHR status of myConnection is ${myConnection.status}`);
-        if (myConnection.isProcessed) {
-            console.log('You have probably clicked on that button while a connection is being processed.');
-            return;
-        }
         console.log('Now we will await myConnection.send');
         response = await myConnection.send(myData);
         console.log('await myConnection.send is DONE, all data received!');

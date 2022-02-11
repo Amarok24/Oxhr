@@ -4,8 +4,8 @@ https://github.com/Amarok24/Oxhr
 */
 
 import {Oxhr} from './oxhr.js';
-import {IPeople, ResourcesType} from './swapi-schema.js';
 import {OxhrError} from './oxhr-error.js';
+import {IPeople, ResourcesType} from './swapi-schema.js';
 import type {IOxhrParams, IRequestHeader} from './oxhr-types.js';
 
 const startButton = document.querySelector<HTMLButtonElement>('#startButton');
@@ -99,15 +99,14 @@ async function tryToSendData(): Promise<void>
   try
   {
     console.log('try-block of tryToSendData');
-    console.log(`myConnection.instanceId = ${ myConnection.instanceId }`);
     console.log(`XHR status of myConnection is ${ myConnection.status }`);
-
+/* 
     if (myConnection.isProcessed)
     {
-      console.log('You have probably clicked on that button while a connection is being processed.');
+      console.log('You have clicked on the button while a connection is being processed.');
       return;
     }
-
+ */
     console.log('Now we will await myConnection.send');
     // In this example we pass the data to be sent with request with the 'send' method.
     response = await myConnection.send(myData);
