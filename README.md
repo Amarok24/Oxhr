@@ -9,11 +9,12 @@ An object-oriented XHR (XMLHttpRequest) wrapper/library.
 - Written in TypeScript
 - No dependencies
 - Promise-based (asynchronous)
-- Tiny (3kb minified) and pretty simple
-- Ready to use ES module `oxhr.min.js` for your JavaScript projects
+- Tiny (under 5kb minified)
+- Robust and simple
 - An alternative to _XMLHttpRequest_ and _fetch_
 - An alternative to feature-rich libraries like [_axios_](https://github.com/axios/axios)
-- A small demo included, see `index.html`
+
+A small demo is included, see `index.html`.
 
 If you are not familiar with ES modules have a look [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules).
 
@@ -26,15 +27,14 @@ __Import modules and create a new instance in TypeScript__
 
 ```ts
 import { Oxhr } from "./oxhr.js";
-import type { IOxhrParams, IRequestHeader } from "./oxhr_types.js";
+import type { IOxhrParams, IRequestHeader } from "./oxhr-types.js";
 
 async function fetchDataExample()
 {
   let response: any;
   const options: IOxhrParams = {
     url: "https://...",
-    consoleInfo: "Establishing my connection...",
-    onLoadEnd: () => { console.log("Loading finished!") }
+    onLoadEnd: () => { alert("Finished!") }
   };
 
   // The shortest possible call if you don't care about the return type.
@@ -76,7 +76,7 @@ interface IOxhrParams
 | data           | Data to send             |   -     | null    | Blob, BufferSource, FormData, URLSearchParams,  ReadableStream, string, Document, null |
 | requestHeaders | Array of IRequestHeader  |   -     |         | IRequestHeader[] |
 | timeoutMs      | Timeout in milliseconds  |   -     | 60'000  | number  |
-| consoleInfo    | Description for console output | - |         | string  |
+| consoleInfo    | Description for console output after loading is done. | - |         | string  |
 | debug          | Additional console output | - | false | boolean |
 
 
@@ -99,24 +99,35 @@ Please note that progress in % must not always work because it depends on server
 | abort  | Aborts an open connection       | --           |
 
 
+### Properties (read-only)
+
+| Name   | Description                     |
+| :--    | :--                             | 
+| instanceId   | A unique ID of the Oxhr instance (UUID). | 
+| readyState  | The XHR readyState code.    | 
+| status  | The XHR status code.   |
+| success  | Returns _true_ if transfer was successful (readyState is DONE and status is OK).  | 
+
 There is also a simple getter for reading the "readyState" of current XMLHttpRequest connection.
 
 ## FAQs
 
 __How can I stop a running connection?__
-- Very easily, you don't need special constructs like the `AbortController()` in Fetch API. In Oxhr you simply call the `abort` method. See the included demo.
+- Very easily, you don't need the `AbortController()` object which is needed for the Fetch API. In Oxhr you simply call the `abort` method. See the included demo.
 
 __Can I open multiple connections at once?__
-- Yes and no. It's not possible using one instance of Oxhr, but you can create multiple (independent) instances. Since Oxhr works with EcmaScript's Promise object you can also make use of Promise.all(), Promise.any() etc. Additionally, you can start multiple "await ... send()" requests using one class instance, they will be handled one after another.
+- Yes and no. It's not possible using one instance of Oxhr, but you can create multiple (independent) instances (each instance will have its own unique UUID). Since Oxhr works with EcmaScript's Promise object you can also make use of Promise.all(), Promise.any() etc. Additionally, you can start multiple "await ... send()" requests using one class instance, they will be handled one after another.
 
 
 ## Changelog
 ### _v1.2.0_
 - Previous version didn't compile in TypeScript 4.5.4 because of an error, this update fixes it
 - Added new "debug" parameter for more verbose console log
-- Bugfix for custom onLoadEnd method which didn't get triggered in TypeScript 4.5.4
-- Demo in index.html changed to se an interface for incoming JSON data
-- Other minor code changes and cleanup
+- Several small bugfixes, one big bugfix for custom onLoadEnd method which didn't get triggered in TypeScript 4.5.4
+- Added 3 new getters: instanceId, status, success
+- Demo in index.html changed significantly
+- Many code improvements, now the library is more robust and handles all kind of wrong usage in a nice way
+- Major code refactoring
 
 ---
 

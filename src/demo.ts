@@ -1,12 +1,13 @@
 /*
-Demo of Oxhr, an object-oriented XHR (XMLHttpRequest) wrapper/library.
+Demo of Oxhr, an object-oriented and asynchronous XMLHttpRequest library.
 https://github.com/Amarok24/Oxhr
 */
 
 import {Oxhr} from './oxhr.js';
-import type {IOxhrParams, IRequestHeader} from './oxhr-types.js';
-
 import {IPeople, ResourcesType} from './swapi-schema.js';
+import {OxhrError} from './oxhr-error.js';
+import {XhrReadyState} from './xhr-codes.js';
+import type {IOxhrParams, IRequestHeader} from './oxhr-types.js';
 
 const startButton = document.querySelector<HTMLButtonElement>('#startButton');
 const abortButton = document.querySelector<HTMLButtonElement>('#abortButton');
@@ -22,10 +23,10 @@ async function fetchRandomStarWarsData(): Promise<void>
 {
   let peopleResponse: IPeople;
   const random: number = Math.floor(Math.random() * 10 + 1);
-  const mySimpleOptions: IOxhrParams = {
+  const swOptions: IOxhrParams = {
     // I also recommend this free API for testing: https://webhook.site/
     url: `https://swapi.dev/api/${ ResourcesType.People }/${ random }`,
-    consoleInfo: 'Establishing my simple test connection...',
+    consoleInfo: 'StarWars connection finished, some details below.',
     onLoadEnd: () =>
     {
       console.info('Opening browser pop-up message with character data...');
@@ -33,13 +34,16 @@ async function fetchRandomStarWarsData(): Promise<void>
     },
     // The response of SW-API is in JSON, so we want automatic JSON.parse()
     responseType: 'json',
-    debug: true
+    debug: false
   };
-  const mySimpleConnection = new Oxhr<IPeople>(mySimpleOptions);;
+  const mySwConnection = new Oxhr<IPeople>(swOptions);
 
-  peopleResponse = await mySimpleConnection.send();
+  console.log(`mySWConnection.instanceId = ${ mySwConnection.instanceId }`);
+  peopleResponse = await mySwConnection.send();
   console.log(`Character name: ${ peopleResponse.name }`);
   console.log(peopleResponse);
+  console.log(`mySwConnection.readyState = ${ mySwConnection.readyState }`);
+  if (mySwConnection.success) console.log('Success!');
 }
 
 
@@ -70,8 +74,9 @@ const myOptions: IOxhrParams = {
   responseType: 'json',
   // data: `{ "test": 123 }`, -- Data may be passed before calling the 'send' method.
   requestHeaders: myRequestHeaders,
-  timeoutMs: 7000,
-  consoleInfo: 'Establishing my test connection...',
+  timeoutMs: 20000,
+  debug: true,
+  consoleInfo: 'My test connection finished, some details below.',
   onLoadEnd: onLoadEnd,
   onTimeOut: onTimeOut,
   onProgress: onProgress,
@@ -94,10 +99,20 @@ async function tryToSendData(): Promise<void>
 
   try
   {
-    console.log('AWAITING DATA');
+    console.log('try-block of tryToSendData');
+    console.log(`myConnection.instanceId = ${ myConnection.instanceId }`);
+    console.log(`XHR status of myConnection is ${ myConnection.status }`);
+
+    if ((myConnection.readyState !== XhrReadyState.DONE) && (myConnection.readyState !== XhrReadyState.UNSENT))
+    {
+      console.log('You have probably clicked on that button while a connection is being processed.');
+      return;
+    }
+
+    console.log('Now we will await myConnection.send');
     // In this example we pass the data to be sent with request with the 'send' method.
     response = await myConnection.send(myData);
-    console.log('ALL DATA RECEIVED');
+    console.log('await myConnection.send is DONE, all data received!');
 
     if (response && response.someFixedResponseData === 12345)
     {
@@ -114,10 +129,13 @@ async function tryToSendData(): Promise<void>
   }
   catch (e: unknown)
   {
-    // 'err' is error message from "reject( new Error() )" lines in oxhr.ts
-    if (!(e instanceof Error)) throw e;
-    //TODO: custom Error instance, OxhrError
-    console.log(`An error occured, but we handled it. Error message: ${ e.message }`);
+    if (!(e instanceof OxhrError)) throw e;
+    console.log(`Oxhr error message: ${ e.message }`);
+    console.log(e);
+  }
+  finally
+  {
+    console.log(`finally-block, XHR status of myConnection is ${ myConnection.status }`);
   }
 }
 
@@ -126,22 +144,30 @@ function onProgress(percent: number, bytes: number): void
 {
   // Often the total filesize is not known, in such a case percent will be -1
   if (loadProgress) loadProgress.value = percent;
-  if (loadBytes) loadBytes.innerText = bytes + " bytes";
+  if (loadBytes) loadBytes.innerText = bytes + ' bytes';
 }
 
 function onAbort(): void
 {
-  console.log("demo: custom abort handler");
+  console.log('demo: custom abort handler');
+  alert('Connection aborted by user');
 }
 
 function onLoadEnd(): void
 {
   console.log(`demo: custom loadend handler, readyState = ${ myConnection.readyState }`);
+  console.log(`XHR status of myConnection is ${ myConnection.status }`);
+
+  if (myConnection.success)
+  {
+    alert('Success!');
+  }
 }
 
 function onTimeOut(): void
 {
-  console.log("demo: custom timeout handler");
+  console.log('demo: custom timeout handler');
+  alert('Connection time out!');
 }
 
 function handleStartButtonClick()
@@ -152,17 +178,17 @@ function handleStartButtonClick()
 
   tryToSendData();
 
-  console.log("end: handleStartButtonClick");
+  console.log('end: handleStartButtonClick');
 }
 
 function handleAbortButtonClick()
 {
-  console.log("start: handleAbortButtonClick");
+  console.log('start: handleAbortButtonClick');
   myConnection.abort();
-  console.log("end: handleAbortButtonClick");
+  console.log('end: handleAbortButtonClick');
 }
 
 
-if (startButton) startButton.addEventListener("click", handleStartButtonClick);
-if (abortButton) abortButton.addEventListener("click", handleAbortButtonClick);
-if (swButton) swButton.addEventListener("click", fetchRandomStarWarsData);
+if (startButton) startButton.addEventListener('click', handleStartButtonClick);
+if (abortButton) abortButton.addEventListener('click', handleAbortButtonClick);
+if (swButton) swButton.addEventListener('click', fetchRandomStarWarsData);

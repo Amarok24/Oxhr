@@ -36,6 +36,18 @@
       background-color: #fdfdfd;
     }
 
+    fieldset {
+      border: 1px solid grey;
+      box-shadow: 2px 2px 5px silver;
+      padding: 20px;
+      margin-bottom: 2em;
+    }
+
+    input {
+      display: block;
+      margin: 0.5em 0;
+    }
+
     .container {
       max-width: 700px;
       margin: 0 auto;
@@ -64,22 +76,30 @@
 
     <br /><br />
 
-    <label for="loadProgress">File progress:</label>
-    <progress id="loadProgress" min="0" max="100" value="0"> 0% </progress>
+    <fieldset>
+      <label for="loadProgress">File progress:</label>
+      <progress id="loadProgress" min="0" max="100" value="0"> 0% </progress>
 
-    <label for="loadBytes">Bytes loaded:</label>
-    <span id="loadBytes"></span>
+      <label for="loadBytes">Bytes loaded:</label>
+      <span id="loadBytes"></span>
 
-    <br /><br />
+      <br /><br />
 
-    <input type="button" id="startButton" value="Start large JSON download" />
-    <input type="button" id="abortButton" value="Abort JSON download" />
+      <input type="button" id="startButton" value="Start large JSON download" />
+      <input type="button" id="abortButton" value="Abort JSON download" />
 
-    <br /><br /><br />
+      <br />
+      Each click on start re-uses one and the same Oxhr instance. You may want to slow
+      down the internet speed in browser developer tools.
+    </fieldset>
 
-    <input type="button" id="swButton" value="Fetch a StarWars character" />
 
-    <br /><br />
+    <fieldset>
+      <input type="button" id="swButton" value="Fetch a StarWars character" />
+      <br />
+      Each click creates a new Oxhr instance, try clicking multiple times.
+    </fieldset>
+
 
     <h3>XMLHttpRequest.readyState</h3>
 
