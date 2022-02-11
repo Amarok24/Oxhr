@@ -1,7 +1,6 @@
 import { Oxhr } from './oxhr.js';
 import { ResourcesType } from './swapi-schema.js';
 import { OxhrError } from './oxhr-error.js';
-import { XhrReadyState } from './xhr-codes.js';
 const startButton = document.querySelector('#startButton');
 const abortButton = document.querySelector('#abortButton');
 const swButton = document.querySelector('#swButton');
@@ -12,7 +11,7 @@ async function fetchRandomStarWarsData() {
     const random = Math.floor(Math.random() * 10 + 1);
     const swOptions = {
         url: `https://swapi.dev/api/${ResourcesType.People}/${random}`,
-        consoleInfo: 'StarWars connection finished, some details below.',
+        consoleMessage: 'StarWars connection finished, some details below.',
         onLoadEnd: () => {
             console.info('Opening browser pop-up message with character data...');
             alert(JSON.stringify(peopleResponse));
@@ -38,9 +37,9 @@ const myOptions = {
     requestHeaders: myRequestHeaders,
     timeoutMs: 20000,
     debug: true,
-    consoleInfo: 'My test connection finished, some details below.',
+    consoleMessage: 'My test connection finished, some details below.',
     onLoadEnd: onLoadEnd,
-    onTimeOut: onTimeOut,
+    onTimeout: onTimeout,
     onProgress: onProgress,
     onAbort: onAbort
 };
@@ -52,7 +51,7 @@ async function tryToSendData() {
         console.log('try-block of tryToSendData');
         console.log(`myConnection.instanceId = ${myConnection.instanceId}`);
         console.log(`XHR status of myConnection is ${myConnection.status}`);
-        if ((myConnection.readyState !== XhrReadyState.DONE) && (myConnection.readyState !== XhrReadyState.UNSENT)) {
+        if (myConnection.isProcessed) {
             console.log('You have probably clicked on that button while a connection is being processed.');
             return;
         }
@@ -93,7 +92,7 @@ function onLoadEnd() {
         alert('Success!');
     }
 }
-function onTimeOut() {
+function onTimeout() {
     console.log('demo: custom timeout handler');
     alert('Connection time out!');
 }
