@@ -19,7 +19,7 @@ function generateUUID(): string
 
   if (typeof self.crypto !== 'undefined')
   {
-    cryptoRef = self.crypto as CryptoNew;
+    cryptoRef = self.crypto;
     r = cryptoRef.randomUUID?.();
   }
 
